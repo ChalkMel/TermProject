@@ -28,6 +28,5 @@ public class TowerMenuButton : MonoBehaviour
     private void ChooseTower()
     {
       Menu.CurrentTower = _tower;
-      Debug.Log(Menu.CurrentTower);
     }
 }

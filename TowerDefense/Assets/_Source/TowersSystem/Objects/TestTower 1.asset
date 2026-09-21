@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 746d2781e698e9f48be01ab5bddb35c9, type: 3}
   m_Name: TestTower 1
   m_EditorClassIdentifier: 
-  Name: TestTower
-  Cost: 10
-  Range: 2
-  Cooldown: 2
-  Damage: 2
-  tile: {fileID: 11400000, guid: 5e445b032ecc4304a8b29a8060afcd22, type: 2}
+  Name: TestTower2
+  Cost: 5
+  Range: 4
+  Cooldown: 3
+  Damage: 1
+  tile: {fileID: 11400000, guid: 3309d81d93ec2d744999a627151b5b61, type: 2}

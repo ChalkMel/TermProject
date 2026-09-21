@@ -6,6 +6,7 @@ using UnityEngine.Tilemaps;
 public class TowerBuilder : MonoBehaviour
 {
   [SerializeField] private TowerMenu menu;
+  [SerializeField] private Credits credits;
   [SerializeField] private Tilemap tilemap;
   [SerializeField] private Camera cam;
 
@@ -27,9 +28,12 @@ public class TowerBuilder : MonoBehaviour
   {
     TileBase existing = tilemap.GetTile(cellPos);
 
-    if (existing == null)
+    if (credits.TrySpendMoney(menu.CurrentTower.Cost))
     {
-      tilemap.SetTile(cellPos, menu.CurrentTower.tile);
+      if (existing == null)
+      {
+        tilemap.SetTile(cellPos, menu.CurrentTower.tile);
+      }
     }
   }
   
