@@ -17,4 +17,4 @@ MonoBehaviour:
   Range: 4
   Cooldown: 3
   Damage: 1
-  tile: {fileID: 11400000, guid: 3309d81d93ec2d744999a627151b5b61, type: 2}
+  Tile: {fileID: 11400000, guid: 5e445b032ecc4304a8b29a8060afcd22, type: 2}

@@ -1,24 +1,26 @@
-using System;
 using TMPro;
 using UnityEngine;
 
-public class CreditsUI : MonoBehaviour
+namespace _Source.Resources
 {
-    [SerializeField] private Credits credits;
-    [SerializeField] private TextMeshProUGUI moneyText;
-    private void Awake()
+    public class CreditsUI : MonoBehaviour
     {
-        credits.MoneyChanged += DrawMoney;
-        DrawMoney();
-    }
+        [SerializeField] private Credits credits;
+        [SerializeField] private TextMeshProUGUI moneyText;
+        private void Awake()
+        {
+            credits.MoneyChanged += DrawMoney;
+            DrawMoney();
+        }
     
-    private void OnDestroy()
-    {
-        credits.MoneyChanged -= DrawMoney;
-    }
+        private void OnDestroy()
+        {
+            credits.MoneyChanged -= DrawMoney;
+        }
 
-    private void DrawMoney()
-    {
-        moneyText.text = credits.GetMoney().ToString();
+        private void DrawMoney()
+        {
+            moneyText.text = credits.GetMoney().ToString();
+        }
     }
 }

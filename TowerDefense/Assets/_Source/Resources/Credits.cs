@@ -1,29 +1,33 @@
 using System;
 using UnityEngine;
-public class Credits : MonoBehaviour
+
+namespace _Source.Resources
 {
-    private int _money = 100;
-    
-    public Action MoneyChanged;
-    
-    public int GetMoney()
+    public class Credits : MonoBehaviour
     {
-        return _money;
-    }
-
-    public bool TrySpendMoney(int amount)
-    {
-        if (_money >= amount)
+        private int _money = 100;
+    
+        public Action MoneyChanged;
+    
+        public int GetMoney()
         {
-            SpendMoney(amount);
-            return true;
+            return _money;
         }
-        return false;
-    }
 
-    private void SpendMoney(int amount)
-    {
-        _money -= amount;
-        MoneyChanged?.Invoke();
+        public bool TrySpendMoney(int amount)
+        {
+            if (_money >= amount)
+            {
+                SpendMoney(amount);
+                return true;
+            }
+            return false;
+        }
+
+        private void SpendMoney(int amount)
+        {
+            _money -= amount;
+            MoneyChanged?.Invoke();
+        }
     }
 }

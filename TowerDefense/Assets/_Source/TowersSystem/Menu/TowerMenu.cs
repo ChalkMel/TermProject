@@ -1,29 +1,45 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class TowerMenu : MonoBehaviour
-{
-    public TowerConfig CurrentTower;
-    [SerializeField] private List<TowerConfig> towers;
-    [SerializeField] private GameObject buttonPrefab;
-
-    private void Awake()
+namespace _Source.TowersSystem.Menu
+{ 
+    public class TowerMenu : MonoBehaviour
     {
-        DrawButtons(); 
-        CurrentTower = towers[0];
-        Debug.Log(CurrentTower);
-    }
+        [SerializeField] private List<TowerConfig> towers;
+        [SerializeField] private GameObject buttonPrefab;
+        public event Action<TowerConfig> TowerChosen;
 
-    private void DrawButtons()
-    {
-        for (int i = 0; i < towers.Count; i++)
+        private void Awake()
         {
-            var button = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, transform);
-            var comp = button.GetComponentInChildren<TowerMenuButton>();
-            comp.DrawText(towers[i]);
-            comp.Menu = this;
+            DrawButtons();
+            Hide();
+        }
+
+        public void Show()
+        {
+            gameObject.SetActive(true);
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
+
+        private void DrawButtons()
+        {
+            foreach (TowerConfig t in towers)
+            {
+                var button = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, transform);
+                var comp = button.GetComponentInChildren<TowerMenuButton>();
+                comp.DrawText(t);
+                comp.Menu = this;
+            }
+        }
+
+        public void SelectTower(TowerConfig tower)
+        {
+            TowerChosen?.Invoke(tower);
         }
     }
 }
