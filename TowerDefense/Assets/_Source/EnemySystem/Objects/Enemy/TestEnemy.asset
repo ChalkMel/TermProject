@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: TestEnemy
   m_EditorClassIdentifier: 
   speed: 1
-  maxHealth: 100
+  maxHealth: 6
   damage: 2
   reward: 6
   prefab: {fileID: 6247233371714193356, guid: 3af77a2f02ceb4f418058d02e2cf4bbe, type: 3}

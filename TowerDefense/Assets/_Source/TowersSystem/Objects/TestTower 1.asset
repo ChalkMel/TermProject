@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: TestTower 1
   m_EditorClassIdentifier: 
   Name: TestTower2
-  Cost: 5
-  Range: 4
   Cooldown: 3
   Damage: 1
+  Level: 0
+  Cost: 5
+  Range: 4
   Tile: {fileID: 11400000, guid: 5e445b032ecc4304a8b29a8060afcd22, type: 2}
+  Prefab: {fileID: 979990956170083174, guid: 67863d7184256794b8833b3db1fb0b09, type: 3}

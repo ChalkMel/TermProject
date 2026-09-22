@@ -15,14 +15,16 @@ namespace _Source.TowersSystem
         public TowerConfig Config => tower;
         public float Range => tower.Range;
         public float CurrentCooldown => _currentCooldown;
+        public Vector3Int CellPosition { get; private set; }
         public bool IsReadyToShoot => _currentCooldown <= 0;
 
         public System.Action<EnemyRuntime> OnEnemyTargeted;
 
-        public void Initialize(TowerConfig config)
+        public void Initialize(TowerConfig config, Vector3Int cellPosition)
         {
             tower = config;
-            _currentCooldown = 0f;
+            CellPosition = cellPosition;
+            name = $"Tower_{config.Name}";
         }
 
         private void Update()
@@ -99,6 +101,14 @@ namespace _Source.TowersSystem
             _currentTarget.TakeDamage(tower.Damage);
             Debug.Log($"{tower.name} damaged {tower.Damage} damage {_currentTarget.name}");
             _currentCooldown = tower.Cooldown;
+        }
+        
+        public void ShowTooltip(TowerTooltip tooltip)
+        {
+            if (tooltip != null && tower != null)
+            {
+                tooltip.Show(tower);
+            }
         }
 
         private void OnDrawGizmos()
