@@ -1,41 +1,113 @@
+using System.Collections.Generic;
 using UnityEngine;
+using _Source.EnemySystem;
 
 namespace _Source.TowersSystem
 {
-  public class TowerRuntime : MonoBehaviour
-  {
-    [SerializeField] private TowerConfig tower;
+    public class TowerRuntime : MonoBehaviour
+    {
+        [SerializeField] private TowerConfig tower;
         
-    private float _currentCooldown;
-    private float _currentDamage;
-    private float _currentRange;
-    private int _currentLevel;
-        
-    public TowerConfig Tower
-    {
-      get => tower;
-      set => tower = value;
-    }
+        private float _currentCooldown = 0f;
+        private List<EnemyRuntime> _enemiesInRange = new List<EnemyRuntime>();
+        private EnemyRuntime _currentTarget;
 
-    public float CurrentCooldown => _currentCooldown;
-    public float CurrentDamage => _currentDamage;
-    public float CurrentRange => _currentRange;
-    public int CurrentLevel => _currentLevel;
+        public TowerConfig Config => tower;
+        public float Range => tower.Range;
+        public float CurrentCooldown => _currentCooldown;
+        public bool IsReadyToShoot => _currentCooldown <= 0;
 
-    private void Awake()
-    {
-      if (tower != null)
-      {
-        _currentCooldown = tower.Cooldown;
-        _currentDamage = tower.Damage;
-        _currentRange = tower.Range;
-        _currentLevel = tower.Level;
-      }
-    }
+        public System.Action<EnemyRuntime> OnEnemyTargeted;
 
-    public void Shoot()
-    {
-      Debug.Log($"Tower shooting! Damage: {_currentDamage}, Range: {_currentRange}");
+        public void Initialize(TowerConfig config)
+        {
+            tower = config;
+            _currentCooldown = 0f;
+        }
+
+        private void Update()
+        {
+            if (_currentCooldown > 0)
+            {
+                _currentCooldown -= Time.deltaTime;
+            }
+            
+            UpdateTarget();
+            
+            if (IsReadyToShoot && _currentTarget != null)
+            {
+                Shoot();
+            }
+        }
+
+        private void UpdateTarget()
+        {
+            _enemiesInRange.RemoveAll(e => e == null || !e.IsAlive);
+            
+            if (_currentTarget == null || !_currentTarget.IsAlive || !IsEnemyInRange(_currentTarget))
+            {
+                _currentTarget = FindClosestEnemy();
+                if (_currentTarget != null)
+                {
+                    OnEnemyTargeted?.Invoke(_currentTarget);
+                }
+            }
+        }
+
+        private EnemyRuntime FindClosestEnemy()
+        {
+            EnemyRuntime closest = null;
+            float closestDistance = float.MaxValue;
+            
+            foreach (var enemy in _enemiesInRange)
+            {
+                if (enemy == null || !enemy.IsAlive) continue;
+                
+                float distance = Vector2.Distance(transform.position, enemy.transform.position);
+                if (distance < closestDistance && distance <= tower.Range)
+                {
+                    closestDistance = distance;
+                    closest = enemy;
+                }
+            }
+            
+            return closest;
+        }
+
+        private bool IsEnemyInRange(EnemyRuntime enemy)
+        {
+            if (enemy == null) return false;
+            return Vector2.Distance(transform.position, enemy.transform.position) <= tower.Range;
+        }
+
+        public void OnEnemyEnteredRange(EnemyRuntime enemy)
+        {
+            if (enemy != null && !_enemiesInRange.Contains(enemy))
+            {
+                _enemiesInRange.Add(enemy);
+            }
+        }
+
+        public void OnEnemyExitedRange(EnemyRuntime enemy)
+        {
+            _enemiesInRange.Remove(enemy);
+        }
+
+        private void Shoot()
+        {
+            if (_currentTarget == null) return;
+            _currentTarget.TakeDamage(tower.Damage);
+            Debug.Log($"{tower.name} damaged {tower.Damage} damage {_currentTarget.name}");
+            _currentCooldown = tower.Cooldown;
+        }
+
+        private void OnDrawGizmos()
+        {
+            if (tower != null)
+            {
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawWireSphere(transform.position, tower.Range);
+            }
+        }
     }
-  }
 }

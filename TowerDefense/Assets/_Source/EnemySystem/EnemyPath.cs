@@ -33,9 +33,9 @@ namespace _Source.EnemySystem
       for (int i = 0; i < points.Count - 1; i++)
       {
         Gizmos.DrawLine(points[i], points[i + 1]);
-        Gizmos.DrawSphere(points[i], 0.01f);
+        Gizmos.DrawSphere(points[i], 0.2f);
       }
-      Gizmos.DrawSphere(points[points.Count - 1], 0.05f);
+      Gizmos.DrawSphere(points[points.Count - 1], 0.3f);
     }
 #endif
   }

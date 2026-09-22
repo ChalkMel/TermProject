@@ -1,3 +1,4 @@
+// TowerBuilder.cs (улучшенная версия)
 using _Source.Resources;
 using _Source.TowersSystem.Menu;
 using UnityEngine;
@@ -13,33 +14,50 @@ namespace _Source.TowersSystem
         [SerializeField] private Tilemap tilemap;
         [SerializeField] private Camera cam;
         [SerializeField] private SpriteRenderer highlighter;
-        [SerializeField] private GameObject towerPrefab;
+        [SerializeField] private LayerMask enemyLayer;
         
         private Vector3Int _pendingCell;
         private bool _hasPendingCell;
         private TowerConfig _selectedTower;
 
+        public System.Action<Vector3Int, TowerConfig> OnTowerPlaced;
+        public System.Action OnPlacementCancelled;
+
         private void Awake()
         {
-            menu.TowerChosen += OnTowerChosen;
-            menu.Hide();
+            if (menu != null)
+            {
+                menu.TowerChosen += OnTowerChosen;
+                menu.Hide();
+            }
+            
             if (highlighter != null)
                 highlighter.gameObject.SetActive(false);
         }
 
         private void OnDestroy()
         {
-            menu.TowerChosen -= OnTowerChosen;
+            if (menu != null)
+                menu.TowerChosen -= OnTowerChosen;
         }
 
         private void Update()
         {
+            HandleInput();
+            UpdateHighlighter();
+        }
+
+        private void HandleInput()
+        {
             if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
             {
-                CancelPlacement();
+                if (_hasPendingCell)
+                {
+                    CancelPlacement();
+                }
                 return;
             }
-
+            
             if (Input.GetMouseButtonDown(0))
             {
                 if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) 
@@ -48,6 +66,7 @@ namespace _Source.TowersSystem
                 Vector3 worldPos = cam.ScreenToWorldPoint(Input.mousePosition);
                 worldPos.z = 0;
                 Vector3Int cellPos = tilemap.WorldToCell(worldPos);
+                
                 TryOpenMenuForCell(cellPos);
             }
         }
@@ -55,38 +74,66 @@ namespace _Source.TowersSystem
         private void TryOpenMenuForCell(Vector3Int cellPos)
         {
             if (tilemap.GetTile(cellPos) != null) 
+            {
                 return;
-            
+            }
+
             _pendingCell = cellPos;
             _hasPendingCell = true;
             
             ShowHighlighter(cellPos);
-            menu.Show();
+            
+            if (menu != null)
+            {
+                menu.Show();
+            }
         }
 
         private void OnTowerChosen(TowerConfig tower)
         {
-            if (!_hasPendingCell) 
-                return;
-            
+            if (!_hasPendingCell) return;
+
             _selectedTower = tower;
             
             if (credits.TrySpendMoney(tower.Cost))
             {
-                BuildTower();
+                PlaceTower();
             }
+            else
+            {
+                Debug.LogWarning("Not enough money!");
+                CancelPlacement();
+            }
+        }
+
+        private void PlaceTower()
+        {
+            if (_selectedTower == null || _selectedTower.Tile == null) return;
+            
+            tilemap.SetTile(_pendingCell, _selectedTower.Tile);
+            
+            Vector3 worldPos = tilemap.GetCellCenterWorld(_pendingCell);
+            GameObject towerObj = new GameObject($"Tower_{_selectedTower.Name}");
+            towerObj.transform.position = worldPos;
+            
+            TowerRuntime runtime = towerObj.AddComponent<TowerRuntime>();
+            runtime.Initialize(_selectedTower);
+            
+            SetupTowerRangeDetection(runtime);
+            
+            OnTowerPlaced?.Invoke(_pendingCell, _selectedTower);
             
             CancelPlacement();
         }
 
-        private void BuildTower()
+        private void SetupTowerRangeDetection(TowerRuntime tower)
         {
-            tilemap.SetTile(_pendingCell, _selectedTower.Tile);
+            CircleCollider2D rangeTrigger = tower.gameObject.AddComponent<CircleCollider2D>();
+            rangeTrigger.radius = tower.Range;
+            rangeTrigger.isTrigger = true;
             
-            Vector3 worldPos = tilemap.GetCellCenterWorld(_pendingCell);
-             var script = Instantiate(towerPrefab, worldPos, Quaternion.identity);
-             var comp = script.GetComponent<TowerRuntime>();
-             comp.Tower = _selectedTower;
+            TowerRangeDetector detector = tower.gameObject.AddComponent<TowerRangeDetector>();
+            detector.Initialize(tower);
         }
 
         private void CancelPlacement()
@@ -94,28 +141,45 @@ namespace _Source.TowersSystem
             _hasPendingCell = false;
             _selectedTower = null;
             HideHighlighter();
-            menu.Hide();
+            
+            if (menu != null)
+                menu.Hide();
+            
+            OnPlacementCancelled?.Invoke();
         }
 
         private void ShowHighlighter(Vector3Int cell)
         {
-            if (highlighter == null) 
-                return;
+            if (highlighter == null) return;
             
             highlighter.gameObject.SetActive(true);
             highlighter.transform.position = tilemap.GetCellCenterWorld(cell);
-            
-            if (_selectedTower != null)
-            {
-                bool canAfford = credits.GetMoney() >= _selectedTower.Cost;
-                highlighter.color = canAfford ? Color.green : Color.red;
-            }
         }
 
         private void HideHighlighter()
         {
-            if (highlighter != null) 
+            if (highlighter != null)
                 highlighter.gameObject.SetActive(false);
+        }
+
+        private void UpdateHighlighter()
+        {
+            if (!_hasPendingCell || highlighter == null || !highlighter.gameObject.activeSelf)
+                return;
+            
+            Vector3 worldPos = cam.ScreenToWorldPoint(Input.mousePosition);
+            worldPos.z = 0;
+            Vector3Int cellPos = tilemap.WorldToCell(worldPos);
+            
+            if (cellPos != _pendingCell)
+            {
+                // TODO: update highlighter to follow mouse
+            }
+        }
+
+        public void SetSelectedTower(TowerConfig tower)
+        {
+            _selectedTower = tower;
         }
     }
 }

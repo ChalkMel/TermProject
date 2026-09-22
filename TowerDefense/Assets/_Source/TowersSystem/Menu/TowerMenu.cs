@@ -8,6 +8,7 @@ namespace _Source.TowersSystem.Menu
     {
         [SerializeField] private List<TowerConfig> towers;
         [SerializeField] private GameObject buttonPrefab;
+        [SerializeField] private GameObject menu;
         public event Action<TowerConfig> TowerChosen;
 
         private void Awake()
@@ -18,12 +19,12 @@ namespace _Source.TowersSystem.Menu
 
         public void Show()
         {
-            gameObject.SetActive(true);
+            menu.SetActive(true);
         }
 
         public void Hide()
         {
-            gameObject.SetActive(false);
+            menu.SetActive(false);
         }
 
         private void DrawButtons()
