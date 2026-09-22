@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: WaveTest
   m_EditorClassIdentifier: 
   enemy: {fileID: 11400000, guid: 7abb507ff7253b64b8964a04e8ec0998, type: 2}
-  count: 1
+  count: 5
   interval: 10
   delay: 2

@@ -13,6 +13,12 @@ namespace _Source.Resources
         {
             return _money;
         }
+        
+        public void AddMoney(int amount)
+        {
+            _money += amount;
+            MoneyChanged?.Invoke();
+        }
 
         public bool TrySpendMoney(int amount)
         {

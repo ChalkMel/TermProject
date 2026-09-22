@@ -11,10 +11,23 @@ namespace _Source.TowersSystem
         private float _currentCooldown = 0f;
         private List<EnemyRuntime> _enemiesInRange = new List<EnemyRuntime>();
         private EnemyRuntime _currentTarget;
+        public int Level = 1;
+        public int Damage
+        {
+            get => tower.Damage;
+            set => tower.Damage = value;
+        }
 
         public TowerConfig Config => tower;
-        public float Range => tower.Range;
+        public float Range
+        {
+            get => tower.Range;
+            set => tower.Range = value;
+        }
+
         public float CurrentCooldown => _currentCooldown;
+        public int GetUpgradeCost() => Config.Cost * Level;
+        public int GetSellPrice() => (Config.Cost * Level) / 4;
         public Vector3Int CellPosition { get; private set; }
         public bool IsReadyToShoot => _currentCooldown <= 0;
 
@@ -98,17 +111,9 @@ namespace _Source.TowersSystem
         private void Shoot()
         {
             if (_currentTarget == null) return;
-            _currentTarget.TakeDamage(tower.Damage);
-            Debug.Log($"{tower.name} damaged {tower.Damage} damage {_currentTarget.name}");
+            _currentTarget.TakeDamage(Damage);
+            Debug.Log($"{tower.name} damaged {Damage} damage {_currentTarget.name}");
             _currentCooldown = tower.Cooldown;
-        }
-        
-        public void ShowTooltip(TowerTooltip tooltip)
-        {
-            if (tooltip != null && tower != null)
-            {
-                tooltip.Show(tower);
-            }
         }
 
         private void OnDrawGizmos()
