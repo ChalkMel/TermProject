@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2239f8ebb6bb604da0ec8e9cf7954bb, type: 3}
   m_Name: TestEnemy
   m_EditorClassIdentifier: 
-  speed: 1
-  maxHealth: 6
-  damage: 2
+  speed: 5
+  maxHealth: 5
+  damage: 20
   reward: 6
   prefab: {fileID: 6247233371714193356, guid: 3af77a2f02ceb4f418058d02e2cf4bbe, type: 3}

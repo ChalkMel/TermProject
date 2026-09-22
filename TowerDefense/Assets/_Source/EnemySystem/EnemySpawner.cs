@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using _Source.Resources;
 using _Source.Waves;
@@ -12,24 +11,29 @@ namespace _Source.EnemySystem
         [SerializeField] private WaveGroups waveGroups;
         [SerializeField] private EnemyPath path;
         [SerializeField] private Transform spawnPoint;
+        [SerializeField] private Base baseRef;
         
         private int _currentWaveIndex;
         private bool _isSpawning;
         private Coroutine _currentWaveCoroutine;
+        private bool _allWavesCompletedInvoked;
 
         public System.Action<int> OnWaveStarted;
         public System.Action<int> OnWaveCompleted;
         public System.Action OnAllWavesCompleted;
 
-        private void Awake()
+        private void Start()
         {
             StartSpawning();
         }
 
         public void StartSpawning()
         {
+            if (waveGroups == null || waveGroups.WaveCount == 0) return;
+
             _currentWaveIndex = 0;
             _isSpawning = true;
+            _allWavesCompletedInvoked = false;
             SpawnNextWave();
         }
 
@@ -45,17 +49,22 @@ namespace _Source.EnemySystem
 
         private void SpawnNextWave()
         {
+            if (!_isSpawning) return;
+
             if (_currentWaveIndex >= waveGroups.WaveCount)
             {
-                _isSpawning = false;
-                OnAllWavesCompleted?.Invoke();
+                CompleteAllWaves();
                 return;
             }
 
             WaveConfig currentWave = waveGroups.GetWave(_currentWaveIndex);
-            if (currentWave == null) return;
+            if (currentWave == null)
+            {
+                _currentWaveIndex++;
+                SpawnNextWave();
+                return;
+            }
 
-            _isSpawning = true;
             OnWaveStarted?.Invoke(_currentWaveIndex);
             _currentWaveCoroutine = StartCoroutine(SpawnWaveCoroutine(currentWave));
         }
@@ -72,28 +81,42 @@ namespace _Source.EnemySystem
                 yield return new WaitForSeconds(wave.Interval);
             }
 
+            if (!_isSpawning) yield break;
+
+            int completedWave = _currentWaveIndex;
             _currentWaveIndex++;
-            OnWaveCompleted?.Invoke(_currentWaveIndex - 1);
-            
-            if (_isSpawning && _currentWaveIndex < waveGroups.WaveCount)
+            OnWaveCompleted?.Invoke(completedWave);
+
+            if (_currentWaveIndex >= waveGroups.WaveCount)
+            {
+                CompleteAllWaves();
+            }
+            else
             {
                 yield return new WaitForSeconds(2f);
                 SpawnNextWave();
             }
-            else if (_currentWaveIndex >= waveGroups.WaveCount)
-            {
-                _isSpawning = false;
-                OnAllWavesCompleted?.Invoke();
-            }
+        }
+
+        private void CompleteAllWaves()
+        {
+            if (_allWavesCompletedInvoked) return;
+            _allWavesCompletedInvoked = true;
+            _isSpawning = false;
+            OnAllWavesCompleted?.Invoke();
         }
 
         private void SpawnEnemy(EnemyConfig enemyConfig)
         {
             if (enemyConfig == null || enemyConfig.Prefab == null) return;
+            if (spawnPoint == null) return;
             
             var enemyObj = Instantiate(enemyConfig.Prefab, spawnPoint.position, Quaternion.identity);
             EnemyRuntime enemyRuntime = enemyObj.GetComponent<EnemyRuntime>();
-            enemyRuntime.Initialize(enemyConfig, path, credits);
+            if (enemyRuntime != null)
+            {
+                enemyRuntime.Initialize(enemyConfig, path, credits, baseRef);
+            }
         }
     }
 }
