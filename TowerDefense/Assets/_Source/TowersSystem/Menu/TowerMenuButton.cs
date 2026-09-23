@@ -1,10 +1,12 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace _Source.TowersSystem.Menu
 {
-  public class TowerMenuButton : MonoBehaviour
+  public class TowerMenuButton : MonoBehaviour,
+    IPointerEnterHandler, IPointerExitHandler, IPointerMoveHandler
   {
     [SerializeField] private TextMeshProUGUI text;
     public TowerMenu Menu;
@@ -27,9 +29,33 @@ namespace _Source.TowersSystem.Menu
       image.sprite = _tower.Tile.sprite;
     }
 
-    private void ChooseTower()
+    public void OnPointerEnter(PointerEventData eventData)
     {
-      Menu.SelectTower(_tower);
+      if (_tower != null)
+        Menu.NotifyHoverStarted(_tower, eventData.position);
     }
+
+    public void OnPointerMove(PointerEventData eventData)
+    {
+      if (_tower != null)
+        Menu.NotifyHoverMoved(eventData.position);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+      if (_tower == null) return;
+
+      // Если курсор перешёл сразу на другую кнопку — не гасим тултип,
+      // новая кнопка сама перерисует его через OnPointerEnter.
+      if (eventData.pointerEnter != null)
+      {
+        var next = eventData.pointerEnter.GetComponentInParent<TowerMenuButton>();
+        if (next != null) return;
+      }
+
+      Menu.NotifyHoverEnded(_tower);
+    }
+
+    private void ChooseTower() => Menu.SelectTower(_tower);
   }
 }

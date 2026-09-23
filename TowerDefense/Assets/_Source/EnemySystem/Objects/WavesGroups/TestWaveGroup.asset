@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: TestWaveGroup
   m_EditorClassIdentifier: 
   waves:
-  - {fileID: 11400000, guid: eb4b0a2fca9d33645a318c6aed1be364, type: 2}
   - {fileID: 11400000, guid: 503302b8c773d5f42bca07f8c53e7a5d, type: 2}
+  - {fileID: 11400000, guid: c2e11cbc78e6d804e84ad65ba5de172f, type: 2}
+  - {fileID: 11400000, guid: 11d0727027c946e46a423beecf84b941, type: 2}

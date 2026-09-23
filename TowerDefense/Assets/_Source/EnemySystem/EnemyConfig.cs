@@ -8,13 +8,15 @@ namespace _Source.EnemySystem
     [SerializeField] private float speed;
     [SerializeField] private int maxHealth;
     [SerializeField] private int damage;
-    [SerializeField] private float reward;
+    [SerializeField] private int reward;
     [SerializeField] private GameObject prefab;
+    [SerializeField] private float attackInterval = 2f;
+    public float AttackInterval => attackInterval;
 
     public float Speed => speed;
     public int MaxHealth => maxHealth;
     public int Damage => damage;
-    public float Reward => reward;
+    public int Reward => reward;
     public GameObject Prefab => prefab;
   }
 }

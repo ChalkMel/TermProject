@@ -10,9 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0e1bbc6a137a6514f898ccb18833e2f5, type: 3}
-  m_Name: WaveTest
+  m_Name: WaveTest 2
   m_EditorClassIdentifier: 
-  enemy: {fileID: 11400000, guid: 7abb507ff7253b64b8964a04e8ec0998, type: 2}
-  count: 5
-  interval: 10
-  delay: 2
+  groups:
+  - enemy: {fileID: 11400000, guid: 12494e8e4ce739042811614cbf7fdd6b, type: 2}
+    count: 10
+    interval: 1
+  - enemy: {fileID: 11400000, guid: 7abb507ff7253b64b8964a04e8ec0998, type: 2}
+    count: 2
+    interval: 1
+  delayBeforeWave: 4
