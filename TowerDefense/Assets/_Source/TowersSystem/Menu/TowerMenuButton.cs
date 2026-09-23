@@ -21,10 +21,7 @@ namespace _Source.TowersSystem.Menu
     public void DrawText(TowerConfig tower)
     {
       _tower = tower;
-      text.text = $"{_tower.Name}\n" +
-                  $"Cost:{_tower.Cost}\n" +
-                  $"Damage:{_tower.Damage}\n" +
-                  $"Cooldown:{_tower.Cooldown}";
+      text.text = $"{_tower.Name}";
       var image = GetComponent<Image>();
       image.sprite = _tower.Tile.sprite;
     }
@@ -44,9 +41,6 @@ namespace _Source.TowersSystem.Menu
     public void OnPointerExit(PointerEventData eventData)
     {
       if (_tower == null) return;
-
-      // Если курсор перешёл сразу на другую кнопку — не гасим тултип,
-      // новая кнопка сама перерисует его через OnPointerEnter.
       if (eventData.pointerEnter != null)
       {
         var next = eventData.pointerEnter.GetComponentInParent<TowerMenuButton>();
