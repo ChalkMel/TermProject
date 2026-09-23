@@ -100,9 +100,12 @@ namespace _Source.TowersSystem
 
         private void HandleCellClick(Vector3Int cellPos)
         {
+            HidePreview();
+            if (tooltip != null && tooltip.gameObject.activeSelf)
+                tooltip.Hide();
+
             if (_placedTowers.TryGetValue(cellPos, out TowerRuntimeBase existing))
             {
-                HidePreview();
                 tooltip.Show(existing);
                 PositionTooltip(cellPos);
                 _placedRangeIndicator.Show(existing.transform.position, existing.Range);
@@ -128,7 +131,7 @@ namespace _Source.TowersSystem
             if (tooltip == null) return;
             Vector3 worldPos = tilemap.GetCellCenterWorld(cell);
             Vector3 screenPos = cam.WorldToScreenPoint(worldPos);
-            tooltip.transform.position = screenPos;
+            tooltip.transform.position = screenPos + new Vector3(-100f,0f,0f);
         }
 
         private void OnTowerChosen(TowerConfig tower)
@@ -237,7 +240,7 @@ namespace _Source.TowersSystem
             int cost = tower.GetUpgradeCost();
             if (!credits.TrySpendMoney(cost)) return;
 
-            tower.Upgrade();
+            tower.UpgradeTower();
             tooltip.Show(tower);
             
             _placedRangeIndicator.Show(tower.transform.position, tower.Range);

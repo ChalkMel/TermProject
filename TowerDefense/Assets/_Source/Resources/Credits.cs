@@ -5,7 +5,7 @@ namespace _Source.Resources
 {
     public class Credits : MonoBehaviour
     {
-        private int _money = 120;
+        [SerializeField] private int _money = 120;
     
         public Action MoneyChanged;
     

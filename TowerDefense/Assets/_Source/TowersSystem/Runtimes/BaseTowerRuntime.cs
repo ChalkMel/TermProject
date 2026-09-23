@@ -25,26 +25,22 @@ namespace _Source.TowersSystem
 
     protected virtual void OnInitialized() { }
 
-    // ---- Апгрейд / продажа ----
     public virtual int GetUpgradeCost() => Config.Cost * Level;
     public virtual int GetSellPrice() => Mathf.Max(1, (Config.Cost * Level) / 2);
 
-    public virtual void Upgrade()
+    public virtual void UpgradeTower()
     {
       Level++;
       _levelRangeBonus += 0.5f;
     }
 
-    // ---- Коллбэки от TowerRangeDetector ----
     public virtual void OnEnemyEnteredRange(EnemyRuntime enemy) { }
     public virtual void OnEnemyExitedRange(EnemyRuntime enemy) { }
     public virtual void OnTowerEnteredRange(TowerRuntimeBase other) { }
     public virtual void OnTowerExitedRange(TowerRuntimeBase other) { }
-
-    // ---- Вызывается перед Destroy ----
+    
     public virtual void OnBeforeDestroy() { }
 
-    // ---- UI ----
     public virtual string GetTooltipText() =>
       $"<b>{Config.Name}</b> (Lv. {Level})\nRange: {Range:F1}";
 

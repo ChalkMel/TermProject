@@ -7,6 +7,8 @@ namespace _Source
   {
     [SerializeField] private float maxHealth = 100f;
     [SerializeField] private Image sliderBar;
+    [SerializeField] private GameObject gameOverScreen;
+    [SerializeField] private PauseMenu pauseMenu;
     private float _currentHealth;
 
     public float Health => _currentHealth;
@@ -41,6 +43,9 @@ namespace _Source
     private void Destroy()
     {
       OnBaseDestroyed?.Invoke();
+      Time.timeScale = 0f;
+      gameOverScreen.SetActive(true);
+      pauseMenu.enabled = false;
       //TODO
       Debug.Log("Game Over! Base destroyed.");
     }

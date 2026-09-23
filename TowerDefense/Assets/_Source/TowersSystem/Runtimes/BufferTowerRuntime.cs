@@ -4,52 +4,60 @@ using UnityEngine;
 
 namespace _Source.TowersSystem
 {
-  public class BufferTowerRuntime : TowerRuntimeBase
-  {
-    private readonly List<AttackerTowerRuntime> _buffedAttackers = new();
-
-    protected override Color GizmoColor => Color.cyan;
-
-    public override void Upgrade()
+    public class BufferTowerRuntime : TowerRuntimeBase
     {
-      base.Upgrade();
-      // Если планируете зависимость % бафа от уровня — уведомите всех
-      foreach (var a in _buffedAttackers)
-        if (a != null) a.OnBufferValueChanged();
-    }
+        [Header("Upgrade Bonus")]
+        [SerializeField] private int buffBonusPerLevel = 5; // +5% за уровень
 
-    public override void OnTowerEnteredRange(TowerRuntimeBase other)
-    {
-      if (other is AttackerTowerRuntime attacker)
-      {
-        attacker.RegisterBuffer(this);
-        if (!_buffedAttackers.Contains(attacker))
-          _buffedAttackers.Add(attacker);
-      }
-    }
+        private readonly List<AttackerTowerRuntime> _buffedAttackers = new();
+        private int _levelBuffBonus;
+        
+        public int EffectiveBuff => (int) (Config.Buff + _levelBuffBonus);
 
-    public override void OnTowerExitedRange(TowerRuntimeBase other)
-    {
-      if (other is AttackerTowerRuntime attacker)
-      {
-        attacker.UnregisterBuffer(this);
-        _buffedAttackers.Remove(attacker);
-      }
-    }
+        protected override Color GizmoColor => Color.cyan;
 
-    public override void OnBeforeDestroy()
-    {
-      foreach (var a in _buffedAttackers)
-        if (a != null) a.UnregisterBuffer(this);
-      _buffedAttackers.Clear();
-    }
+        public override void UpgradeTower()
+        {
+            base.UpgradeTower();
+            _levelBuffBonus += buffBonusPerLevel;
 
-    public override string GetTooltipText()
-    {
-      return $"<b>{Config.Name}</b> (Lv. {Level})\n" +
-             $"Type: Buffer\n" +
-             $"Damage Buff: +{Config.Buff}%\n" +
-             $"Range: {Range:F1}";
+            // Сообщаем всем атакующим, что наш % изменился
+            foreach (var a in _buffedAttackers)
+                if (a != null) a.OnBufferValueChanged();
+        }
+
+        public override void OnTowerEnteredRange(TowerRuntimeBase other)
+        {
+            if (other is AttackerTowerRuntime attacker)
+            {
+                attacker.RegisterBuffer(this);
+                if (!_buffedAttackers.Contains(attacker))
+                    _buffedAttackers.Add(attacker);
+            }
+        }
+
+        public override void OnTowerExitedRange(TowerRuntimeBase other)
+        {
+            if (other is AttackerTowerRuntime attacker)
+            {
+                attacker.UnregisterBuffer(this);
+                _buffedAttackers.Remove(attacker);
+            }
+        }
+
+        public override void OnBeforeDestroy()
+        {
+            foreach (var a in _buffedAttackers)
+                if (a != null) a.UnregisterBuffer(this);
+            _buffedAttackers.Clear();
+        }
+
+        public override string GetTooltipText()
+        {
+            return $"<b>{Config.Name}</b> (Lv. {Level})\n" +
+                   $"Type: Buffer\n" +
+                   $"Damage Buff: +{EffectiveBuff}%\n" +
+                   $"Range: {Range:F1}";
+        }
     }
-  }
 }

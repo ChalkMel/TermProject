@@ -12,6 +12,7 @@ namespace _Source.TowersSystem
     [SerializeField] private TextMeshProUGUI sellPriceText;
     [SerializeField] private Button upgradeButton;
     [SerializeField] private Button sellButton;
+    [SerializeField] private Vector3 offset;
 
     private TowerRuntimeBase _currentTower;
     private TowerBuilder _builder;

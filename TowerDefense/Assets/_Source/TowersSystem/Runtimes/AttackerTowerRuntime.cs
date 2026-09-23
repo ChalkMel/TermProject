@@ -23,9 +23,9 @@ namespace _Source.TowersSystem.Runtimes
 
         protected override Color GizmoColor => Color.yellow;
 
-        public override void Upgrade()
+        public override void UpgradeTower()
         {
-            base.Upgrade();
+            base.UpgradeTower();
             _levelDamageBonus += 1;
         }
 
@@ -65,8 +65,9 @@ namespace _Source.TowersSystem.Runtimes
             {
                 var b = _buffers[i];
                 if (b == null) { _buffers.RemoveAt(i); continue; }
-                if (b.Config.Buff > best)
-                    best = b.Config.Buff;
+
+                if (b.EffectiveBuff > best)
+                    best = b.EffectiveBuff;
             }
             _damageBuffPercent = best;
         }

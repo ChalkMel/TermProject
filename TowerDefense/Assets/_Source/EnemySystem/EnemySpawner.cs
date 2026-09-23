@@ -20,22 +20,23 @@ namespace _Source.EnemySystem
         private bool _isSpawning;
         private Coroutine _currentWaveCoroutine;
         private bool _allWavesCompletedInvoked;
-        
+
+        // --- Текущая волна ---
         private readonly List<EnemyRuntime> _aliveEnemies = new();
         private int _spawnedInWave;
+        private int _killedInWave;
+        private int _totalInWave;
         private bool _waveSpawnFinished;
-        
-        private int _totalSpawned;
-        private int _totalKilled;
 
-        public int TotalSpawned => _totalSpawned;
-        public int TotalKilled => _totalKilled;
-        public int AliveCount => _aliveEnemies.Count;
+        public int KilledInWave => _killedInWave;
+        public int TotalInWave => _totalInWave;
+        public int AliveInWave => _aliveEnemies.Count;
+        public int CurrentWaveIndex => _currentWaveIndex;
 
         public System.Action<int> OnWaveStarted;
         public System.Action<int> OnWaveCompleted;
         public System.Action OnAllWavesCompleted;
-        public System.Action<int, int> OnCountersChanged;
+        public System.Action<int, int, int> OnWaveCountersChanged; // (killed, total)
 
         private void Start()
         {
@@ -49,8 +50,6 @@ namespace _Source.EnemySystem
             _currentWaveIndex = 0;
             _isSpawning = true;
             _allWavesCompletedInvoked = false;
-            _totalSpawned = 0;
-            _totalKilled = 0;
             SpawnNextWave();
         }
 
@@ -83,13 +82,26 @@ namespace _Source.EnemySystem
                 SpawnNextWave();
                 return;
             }
-            
+
+            // --- Сброс волновых счётчиков ---
             _aliveEnemies.Clear();
             _spawnedInWave = 0;
+            _killedInWave = 0;
             _waveSpawnFinished = false;
+
+            _totalInWave = CountEnemiesInWave(currentWave);
+            OnWaveCountersChanged?.Invoke(_killedInWave, _totalInWave, _currentWaveIndex+1);
 
             OnWaveStarted?.Invoke(_currentWaveIndex);
             _currentWaveCoroutine = StartCoroutine(SpawnWaveRoutine(currentWave));
+        }
+
+        private static int CountEnemiesInWave(WaveConfig wave)
+        {
+            int total = 0;
+            foreach (EnemyGroup g in wave.Groups)
+                if (g.enemy != null) total += g.count;
+            return total;
         }
 
         private IEnumerator SpawnWaveRoutine(WaveConfig currentWave)
@@ -116,7 +128,7 @@ namespace _Source.EnemySystem
         private void Update()
         {
             if (!_isSpawning) return;
-            
+
             if (_waveSpawnFinished && _aliveEnemies.Count == 0)
             {
                 _waveSpawnFinished = false;
@@ -149,19 +161,19 @@ namespace _Source.EnemySystem
 
             _aliveEnemies.Add(enemyRuntime);
             _spawnedInWave++;
-            _totalSpawned++;
-            OnCountersChanged?.Invoke(_totalKilled, _totalSpawned);
         }
 
         private void HandleEnemyDied(EnemyRuntime enemy)
         {
             Unsubscribe(enemy);
-            _totalKilled++;
-            OnCountersChanged?.Invoke(_totalKilled, _totalSpawned);
+
+            _killedInWave++;
+            OnWaveCountersChanged?.Invoke(_killedInWave, _totalInWave, _currentWaveIndex+1);
         }
 
         private void HandleEnemyReachedBase(EnemyRuntime enemy)
         {
+            _killedInWave++;
             Unsubscribe(enemy);
         }
 

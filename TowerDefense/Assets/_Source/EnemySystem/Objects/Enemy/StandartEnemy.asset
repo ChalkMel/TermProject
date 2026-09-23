@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2239f8ebb6bb604da0ec8e9cf7954bb, type: 3}
   m_Name: StandartEnemy
   m_EditorClassIdentifier: 
-  speed: 1.5
+  speed: 2.5
   maxHealth: 30
   damage: 5
   reward: 4

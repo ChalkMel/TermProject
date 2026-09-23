@@ -1,27 +1,44 @@
 using TMPro;
 using UnityEngine;
+using _Source.EnemySystem;
 
-namespace _Source.EnemySystem
+namespace _Source.UI
 {
   public class WaveCounterUI : MonoBehaviour
   {
     [SerializeField] private EnemySpawner spawner;
+    [SerializeField] private TextMeshProUGUI waveIndexText;
     [SerializeField] private TextMeshProUGUI counterText;
 
     private void Awake()
     {
-      spawner.OnCountersChanged += Draw;
-      Draw(0, 0);
+      if (spawner == null) return;
+
+      spawner.OnWaveStarted += HandleWaveStarted;
+      spawner.OnWaveCountersChanged += Draw;
+
+      if (waveIndexText != null) waveIndexText.text = "";
+      if (counterText != null) counterText.text = "0 / 0";
     }
 
     private void OnDestroy()
     {
-      spawner.OnCountersChanged -= Draw;
+      if (spawner == null) return;
+
+      spawner.OnWaveStarted -= HandleWaveStarted;
+      spawner.OnWaveCountersChanged -= Draw;
     }
 
-    private void Draw(int killed, int total)
+    private void HandleWaveStarted(int waveIndex)
     {
-      counterText.text = $"Killed: {killed} / {total}";
+      if (waveIndexText != null)
+        waveIndexText.text = $"Wave {waveIndex + 1}";
+    }
+
+    private void Draw(int killed, int total, int waveIndex)
+    {
+      if (counterText != null)
+        counterText.text = $"Wave {waveIndex}:{killed} / {total}";
     }
   }
 }

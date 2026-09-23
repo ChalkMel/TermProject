@@ -46,8 +46,6 @@ namespace _Source.EnemySystem
         {
             if (!IsAlive) return;
 
-            if (_reachedBase) { AttackBase(); return; }
-
             Move();
         }
 
@@ -91,23 +89,13 @@ namespace _Source.EnemySystem
 
             _slowMultiplier = 1f - strongest;
         }
-        
-        private void AttackBase()
-        {
-            _attackTimer -= Time.deltaTime;
-            if (_attackTimer > 0f) return;
-
-            if (_base != null)
-                _base.GetDamage(enemyType.Damage);
-
-            _attackTimer = enemyType.AttackInterval;
-        }
 
         private void ReachBase()
         {
             _reachedBase = true;
-            _attackTimer = 0f;
+            _base.GetDamage(enemyType.Damage);
             OnEnemyReachedBase?.Invoke(this);
+            Destroy(gameObject);
         }
 
         public void TakeDamage(int damage)
