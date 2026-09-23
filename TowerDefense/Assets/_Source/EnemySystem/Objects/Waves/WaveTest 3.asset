@@ -15,11 +15,11 @@ MonoBehaviour:
   groups:
   - enemy: {fileID: 11400000, guid: 12494e8e4ce739042811614cbf7fdd6b, type: 2}
     count: 10
-    interval: 1
+    interval: 5
   - enemy: {fileID: 11400000, guid: 7abb507ff7253b64b8964a04e8ec0998, type: 2}
     count: 2
-    interval: 1
+    interval: 10
   - enemy: {fileID: 11400000, guid: 9ec27e9b2f30c76418360c4411fbe236, type: 2}
     count: 1
-    interval: 1
+    interval: 5
   delayBeforeWave: 4

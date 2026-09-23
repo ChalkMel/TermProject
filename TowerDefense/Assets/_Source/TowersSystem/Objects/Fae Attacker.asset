@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Attacker fae
   Type: 0
-  Cooldown: 2
+  Cooldown: 3
   Damage: 10
   Buff: 10
   Cost: 60

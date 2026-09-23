@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2239f8ebb6bb604da0ec8e9cf7954bb, type: 3}
   m_Name: FastEnemy
   m_EditorClassIdentifier: 
-  speed: 1.5
+  speed: 2
   maxHealth: 20
   damage: 3
   reward: 3

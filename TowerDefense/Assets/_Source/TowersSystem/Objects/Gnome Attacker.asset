@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Attacker gnome
   Type: 0
-  Cooldown: 2
+  Cooldown: 3
   Damage: 16
   Buff: 10
   Cost: 80
