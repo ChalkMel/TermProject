@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace _Source.HeatSystem
+namespace HeatSystem
 {
   public class HeatUI : MonoBehaviour
   {

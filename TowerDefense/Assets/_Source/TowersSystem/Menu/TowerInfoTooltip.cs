@@ -1,51 +1,54 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
+using TowersSystem.Config;
 
-namespace _Source.TowersSystem.Menu
+namespace TowersSystem.Menu
 {
-  public class TowerInfoTooltip : MonoBehaviour
-  {
-    [SerializeField] private GameObject panel;
-        [SerializeField] private TextMeshProUGUI text;
-        [SerializeField] private Vector3 cursorOffset = new Vector3(20f, -20f, 0f);
+    public class TowerBuildButtonTooltip : MonoBehaviour
+    {
+        [SerializeField] private GameObject panel;
+        [SerializeField] private TextMeshProUGUI nameText;
+        [SerializeField] private TextMeshProUGUI description;
+        [SerializeField] private TextMeshProUGUI cost;
+        [SerializeField] private Image icon;
+
+        [Header("Offset")]
+        [Tooltip("Смещение тултипа относительно кнопки (в пикселях UI). Y > 0 — выше кнопки.")]
+        [SerializeField] private Vector2 offsetFromButton = new Vector2(0f, 10f);
 
         private RectTransform _panelRect;
+        private RectTransform _canvasRect;
         private Canvas _canvas;
         private Camera _uiCamera;
 
         private void Awake()
         {
             if (panel != null) _panelRect = panel.GetComponent<RectTransform>();
-            _canvas = GetComponentInParent<Canvas>();
 
-            if (_canvas != null && _canvas.renderMode != RenderMode.ScreenSpaceOverlay)
-                _uiCamera = _canvas.worldCamera;
+            _canvas = GetComponentInParent<Canvas>();
+            if (_canvas != null)
+            {
+                _canvasRect = _canvas.transform as RectTransform;
+                if (_canvas.renderMode != RenderMode.ScreenSpaceOverlay)
+                    _uiCamera = _canvas.worldCamera;
+            }
 
             Hide();
         }
-
-        public void Show(TowerConfig config, Vector2 screenPosition)
+        
+        public void Show(TowerConfig config, RectTransform anchor)
         {
-            if (panel == null || config == null) return;
+            if (panel == null || config == null || anchor == null) return;
 
             panel.SetActive(true);
-            text.text = BuildText(config);
-            Follow(screenPosition);
-        }
 
-        public void Follow(Vector2 screenPosition)
-        {
-            if (_panelRect == null || _canvas == null) return;
+            nameText.text    = config.Name;
+            description.text = BuildText(config);
+            cost.text        = $"Cost: {config.Cost}";
+            icon.sprite      = config.Tile != null ? config.Tile.sprite : null;
 
-            Vector2 local;
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                    _canvas.transform as RectTransform,
-                    screenPosition,
-                    _uiCamera,
-                    out local))
-            {
-                _panelRect.localPosition = local + (Vector2)cursorOffset;
-            }
+            PositionAbove(anchor);
         }
 
         public void Hide()
@@ -53,34 +56,62 @@ namespace _Source.TowersSystem.Menu
             if (panel != null) panel.SetActive(false);
         }
 
+        private void PositionAbove(RectTransform anchor)
+        {
+            if (_panelRect == null || _canvasRect == null || anchor == null) return;
+            
+            Vector3[] corners = new Vector3[4];
+            anchor.GetWorldCorners(corners);
+            Vector3 topCenterWorld = (corners[1] + corners[2]) * 0.5f;
+            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(_uiCamera, topCenterWorld);
+            
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                _canvasRect, screenPoint, _uiCamera, out Vector2 localPoint);
+
+            
+            Vector2 panelSize = _panelRect.rect.size;
+            Vector2 anchoredPos = localPoint
+                                  + offsetFromButton
+                                  + new Vector2(-panelSize.x * 0.5f, panelSize.y);
+            _panelRect.anchoredPosition = anchoredPos;
+
+            //ClampToCanvas();
+        }
+
+        private void ClampToCanvas()
+        {
+            Vector2 canvasSize = _canvasRect.rect.size;
+            Vector2 halfCanvas = canvasSize * 0.5f;
+            Vector2 panelSize  = _panelRect.rect.size;
+
+            Vector2 min = -halfCanvas + panelSize * 0.5f;
+            Vector2 max =  halfCanvas - panelSize * 0.5f;
+
+            Vector2 pos = _panelRect.anchoredPosition;
+            pos.x = Mathf.Clamp(pos.x, min.x, max.x);
+            pos.y = Mathf.Clamp(pos.y, min.y, max.y);
+            _panelRect.anchoredPosition = pos;
+        }
+
         private static string BuildText(TowerConfig c)
         {
-            switch (c.Type)
+            switch (c.Type) // отдельный мметод подумать
             {
                 case TowerType.Attacker:
-                    return $"<b>{c.Name}</b>\n" +
-                           $"Type: Attacker\n" +
-                           $"Damage: {c.Damage}\n" +
-                           $"Cooldown: {c.Cooldown}s\n" +
-                           $"Range: {c.Range}\n" +
-                           $"Cost: {c.Cost}$";
+                    return "Type: Attacker\n" 
+                           + $"Damage: {c.Damage}\n" 
+                           + $"Cooldown: {c.Cooldown}s\n";
 
                 case TowerType.Buffer:
-                    return $"<b>{c.Name}</b>\n" +
-                           $"Type: Buffer\n" +
-                           $"Damage Buff: +{c.Buff}%\n" +
-                           $"Range: {c.Range}\n" +
-                           $"Cost: {c.Cost}$";
+                    return "Type: Buffer\n" 
+                           + $"Damage Buff: +{c.Buff}%\n" ;
 
                 case TowerType.Slowdown:
-                    return $"<b>{c.Name}</b>\n" +
-                           $"Type: Slowdown\n" +
-                           $"Slow: -{c.Buff}%\n" +
-                           $"Range: {c.Range}\n" +
-                           $"Cost: {c.Cost}$";
+                    return "Type: Slowdown\n" 
+                           + $"Slow: -{c.Buff}%\n";
 
                 default:
-                    return $"<b>{c.Name}</b>\nCost: {c.Cost}$";
+                    return "Error";
             }
         }
     }

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using _Source.EnemySystem;
+using TowersSystem;
 using UnityEngine;
-using _Source.TowersSystem;
+using EnemySystem;
 
-namespace _Source.TowersSystem.Runtimes
+namespace TowersSystem.Runtimes
 {
     public class AttackerTowerRuntime : TowerRuntimeBase, IBuffReceiver
     {
@@ -85,7 +85,7 @@ namespace _Source.TowersSystem.Runtimes
                 _currentTarget = FindClosestEnemy();
         }
 
-        private EnemyRuntime FindClosestEnemy()
+        public EnemyRuntime FindClosestEnemy()
         {
             EnemyRuntime closest = null;
             float closestSqr = float.MaxValue;
@@ -100,6 +100,11 @@ namespace _Source.TowersSystem.Runtimes
             return closest;
         }
 
+        public void UpdateCooldown()
+        {
+            _currentCooldown = 0;
+        }
+
         private bool IsEnemyInRange(EnemyRuntime enemy)
         {
             if (enemy == null) return false;
@@ -109,8 +114,13 @@ namespace _Source.TowersSystem.Runtimes
 
         private void Shoot()
         {
-            _currentTarget.TakeDamage(Damage);
-            _currentCooldown = tower.Cooldown;
+            if (_currentTarget == null) return;
+            var go = Instantiate(Config.ProjectilePrefab, transform.position, Quaternion.identity); 
+            var proj = go.GetComponent<Projectile>();
+            if (proj != null)
+                proj.Initialize(_currentTarget, Damage, Config.ProjectileSpeed, this);
+
+            _currentCooldown = Config.Cooldown;
         }
 
         public override void OnBeforeDestroy()

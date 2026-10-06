@@ -1,8 +1,10 @@
 using TMPro;
+using TowersSystem.BuildSystem;
 using UnityEngine;
 using UnityEngine.UI;
+using TowersSystem.Runtimes;
 
-namespace _Source.TowersSystem
+namespace TowersSystem
 {
   public class TowerTooltip : MonoBehaviour
   {
@@ -15,7 +17,7 @@ namespace _Source.TowersSystem
     [SerializeField] private Vector3 offset;
 
     private TowerRuntimeBase _currentTower;
-    private TowerBuilder _builder;
+    private TowerPlacementController _builder;
 
     public System.Action OnHidden;
 
@@ -26,7 +28,7 @@ namespace _Source.TowersSystem
       Hide();
     }
 
-    public void SetBuilder(TowerBuilder builder) => _builder = builder;
+    public void SetBuilder(TowerPlacementController builder) => _builder = builder;
 
     public void Show(TowerRuntimeBase tower)
     {
@@ -34,8 +36,8 @@ namespace _Source.TowersSystem
       gameObject.SetActive(true);
 
       infoText.text = tower.GetTooltipText();
-      upgradeCostText.text = $"Upgrade: {tower.GetUpgradeCost()}$";
-      sellPriceText.text = $"Sell: {tower.GetSellPrice()}$";
+      upgradeCostText.text = $"Upgrade: {tower.GetUpgradeCost()}";
+      sellPriceText.text = $"Sell: {tower.GetSellPrice()}";
     }
 
     public void Hide()

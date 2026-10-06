@@ -1,8 +1,7 @@
 using TMPro;
 using UnityEngine;
-using _Source.EnemySystem;
 
-namespace _Source.UI
+namespace EnemySystem
 {
   public class WaveCounterUI : MonoBehaviour
   {
@@ -38,7 +37,7 @@ namespace _Source.UI
     private void Draw(int killed, int total, int waveIndex)
     {
       if (counterText != null)
-        counterText.text = $"Wave {waveIndex}:{killed} / {total}";
+        counterText.text = $"Wave {waveIndex}: {killed} / {total}";
     }
   }
 }

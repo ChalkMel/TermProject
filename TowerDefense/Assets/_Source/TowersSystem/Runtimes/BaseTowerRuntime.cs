@@ -1,7 +1,8 @@
 using UnityEngine;
-using _Source.EnemySystem;
+using EnemySystem;
+using TowersSystem.Config;
 
-namespace _Source.TowersSystem
+namespace TowersSystem.Runtimes
 {
   public abstract class TowerRuntimeBase : MonoBehaviour
   {
@@ -25,13 +26,13 @@ namespace _Source.TowersSystem
 
     protected virtual void OnInitialized() { }
 
-    public virtual int GetUpgradeCost() => Config.Cost * Level;
+    public virtual int GetUpgradeCost() => (Config.Cost * Level) / 2; //TODO
     public virtual int GetSellPrice() => Mathf.Max(1, (Config.Cost * Level) / 2);
 
     public virtual void UpgradeTower()
     {
       Level++;
-      _levelRangeBonus += 0.5f;
+      _levelRangeBonus += .5f; //TODO
     }
 
     public virtual void OnEnemyEnteredRange(EnemyRuntime enemy) { }

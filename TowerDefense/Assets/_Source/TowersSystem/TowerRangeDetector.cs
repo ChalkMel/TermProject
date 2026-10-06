@@ -1,7 +1,8 @@
 using UnityEngine;
-using _Source.EnemySystem;
+using EnemySystem;
+using TowersSystem.Runtimes;
 
-namespace _Source.TowersSystem
+namespace TowersSystem
 {
   [RequireComponent(typeof(CircleCollider2D))]
   public class TowerRangeDetector : MonoBehaviour

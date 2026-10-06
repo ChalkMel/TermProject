@@ -2,11 +2,12 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TowersSystem.Config;
 
-namespace _Source.TowersSystem.Menu
+namespace TowersSystem.Menu
 {
   public class TowerMenuButton : MonoBehaviour,
-    IPointerEnterHandler, IPointerExitHandler, IPointerMoveHandler
+    IPointerEnterHandler, IPointerExitHandler
   {
     [SerializeField] private TextMeshProUGUI text;
     public TowerMenu Menu;
@@ -22,25 +23,19 @@ namespace _Source.TowersSystem.Menu
     {
       _tower = tower;
       text.text = $"{_tower.Name}";
-      var image = GetComponent<Image>();
-      image.sprite = _tower.Tile.sprite;
+      
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
       if (_tower != null)
-        Menu.NotifyHoverStarted(_tower, eventData.position);
-    }
-
-    public void OnPointerMove(PointerEventData eventData)
-    {
-      if (_tower != null)
-        Menu.NotifyHoverMoved(eventData.position);
+        Menu.NotifyHoverStarted(_tower, (RectTransform)transform);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
       if (_tower == null) return;
+
       if (eventData.pointerEnter != null)
       {
         var next = eventData.pointerEnter.GetComponentInParent<TowerMenuButton>();

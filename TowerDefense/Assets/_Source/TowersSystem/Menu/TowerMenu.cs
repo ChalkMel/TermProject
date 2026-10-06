@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using TowersSystem.Config;
 
-namespace _Source.TowersSystem.Menu
-{ 
+namespace TowersSystem.Menu
+{
   public class TowerMenu : MonoBehaviour
   {
     [SerializeField] private List<TowerConfig> towers;
     [SerializeField] private GameObject buttonPrefab;
     [SerializeField] private GameObject menu;
-    [SerializeField] private TowerInfoTooltip menuTooltip;
+    [SerializeField] private TowerBuildButtonTooltip menuTooltip;
 
     public event Action<TowerConfig> TowerChosen;
     public event Action<TowerConfig> TowerHoverStarted;
@@ -46,15 +47,10 @@ namespace _Source.TowersSystem.Menu
 
     public void SelectTower(TowerConfig tower) => TowerChosen?.Invoke(tower);
 
-    public void NotifyHoverStarted(TowerConfig tower, Vector2 screenPosition)
+    public void NotifyHoverStarted(TowerConfig tower, RectTransform buttonRect)
     {
       TowerHoverStarted?.Invoke(tower);
-      if (menuTooltip != null) menuTooltip.Show(tower, screenPosition);
-    }
-
-    public void NotifyHoverMoved(Vector2 screenPosition)
-    {
-      if (menuTooltip != null) menuTooltip.Follow(screenPosition);
+      if (menuTooltip != null) menuTooltip.Show(tower, buttonRect);
     }
 
     public void NotifyHoverEnded(TowerConfig tower)

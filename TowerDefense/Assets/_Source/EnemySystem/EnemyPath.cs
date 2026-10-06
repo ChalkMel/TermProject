@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace _Source.EnemySystem
+namespace EnemySystem
 {
   public class EnemyPath : MonoBehaviour
   {

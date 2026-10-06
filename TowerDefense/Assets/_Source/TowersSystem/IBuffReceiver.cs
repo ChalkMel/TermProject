@@ -1,6 +1,6 @@
-using _Source.TowersSystem;
-using _Source.TowersSystem.Runtimes;
-namespace _Source
+using TowersSystem.Runtimes;
+
+namespace TowersSystem
 {
   public interface IBuffReceiver
   {

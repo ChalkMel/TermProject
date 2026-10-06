@@ -1,13 +1,12 @@
 using System.Collections.Generic;
-using _Source.TowersSystem.Runtimes;
 using UnityEngine;
 
-namespace _Source.TowersSystem
+namespace TowersSystem.Runtimes
 {
     public class BufferTowerRuntime : TowerRuntimeBase
     {
         [Header("Upgrade Bonus")]
-        [SerializeField] private int buffBonusPerLevel = 5; // +5% за уровень
+        [SerializeField] private int buffBonusPerLevel = 5;
 
         private readonly List<AttackerTowerRuntime> _buffedAttackers = new();
         private int _levelBuffBonus;
@@ -20,8 +19,7 @@ namespace _Source.TowersSystem
         {
             base.UpgradeTower();
             _levelBuffBonus += buffBonusPerLevel;
-
-            // Сообщаем всем атакующим, что наш % изменился
+            
             foreach (var a in _buffedAttackers)
                 if (a != null) a.OnBufferValueChanged();
         }

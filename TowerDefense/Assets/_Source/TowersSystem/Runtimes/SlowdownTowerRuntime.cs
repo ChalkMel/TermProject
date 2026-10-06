@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using _Source.EnemySystem;
 using UnityEngine;
+using EnemySystem;
 
-namespace _Source.TowersSystem.Runtimes
+namespace TowersSystem.Runtimes
 {
     public class SlowdownTowerRuntime : TowerRuntimeBase
     {

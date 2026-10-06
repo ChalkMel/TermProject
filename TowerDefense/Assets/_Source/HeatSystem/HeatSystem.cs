@@ -1,12 +1,13 @@
 using UnityEngine;
-using _Source;
+using BaseSystem;
 
-namespace _Source.HeatSystem
+namespace HeatSystem
 {
     public class HeatSystem : MonoBehaviour
     {
         [Header("Refs")]
         [SerializeField] private Base baseRef;
+        [SerializeField] private AudioSource audioSource;
 
         [Header("Heat")]
         [SerializeField] private float maxHeat = 100f;
@@ -18,18 +19,22 @@ namespace _Source.HeatSystem
         [Header("Overheat")]
         [SerializeField] private float overheatDamage = 5f;
         [SerializeField] private float overheatLockTime = 2f;
-        [SerializeField] private float overheatSpikePerPress = 3f;
 
         private float _heat;
         private float _pressTimer;
         private float _lockTimer;
+        private bool _isOverheated;
 
         public float Heat => _heat;
         public float MaxHeat => maxHeat;
         public float Normalized => maxHeat > 0f ? _heat / maxHeat : 0f;
-        public bool IsOverheated => _lockTimer > 0f;
-        public bool IsAlive => baseRef == null || baseRef.IsAlive;
         
+        public bool IsOverheated => _isOverheated;
+        
+        public bool IsLocked => _lockTimer > 0f;
+
+        public bool IsAlive => baseRef == null || baseRef.IsAlive;
+
         public System.Action<float, float> OnHeatChanged;
         public System.Action OnOverheated;
         public System.Action OnOverheatRecovered;
@@ -49,17 +54,13 @@ namespace _Source.HeatSystem
             if (_lockTimer > 0f)
             {
                 _lockTimer -= Time.deltaTime;
-                if (_lockTimer <= 0f) OnOverheatRecovered?.Invoke();
+                if (_lockTimer <= 0f)
+                {
+                    _lockTimer = 0f;
+                    SetOverheated(false);
+                }
             }
-            
-            if((_heat is > 0 and <= 20) || _heat> 90)
-            {
-                OnOverheated?.Invoke();
-            }
-            else if (_heat is > 0 and > 20 and < 90 )
-            {
-                OnOverheatRecovered?.Invoke();
-            }
+
             if (_heat > 0f)
             {
                 _heat -= decayPerSecond * Time.deltaTime;
@@ -68,8 +69,12 @@ namespace _Source.HeatSystem
             }
 
             if (_heat <= 0f) Lose();
+            if(_heat <=10 && !audioSource.isPlaying)
+            {
+                audioSource.Play();
+            }
         }
-        
+
         public void Press()
         {
             if (!IsAlive) return;
@@ -86,7 +91,7 @@ namespace _Source.HeatSystem
 
             _heat = Mathf.Min(_heat + heatPerPress, maxHeat);
             OnHeatChanged?.Invoke(_heat, maxHeat);
-            
+
             if (_heat >= maxHeat)
                 TriggerOverheat();
         }
@@ -95,23 +100,32 @@ namespace _Source.HeatSystem
         {
             if (baseRef != null) baseRef.GetDamage(overheatDamage);
 
-            _lockTimer = overheatLockTime;
             _heat = maxHeat;
+            _lockTimer = overheatLockTime;
             OnHeatChanged?.Invoke(_heat, maxHeat);
-            OnOverheated?.Invoke();
 
+            SetOverheated(true);
             Debug.Log($"[HeatSystem] Перегрев! Урон чайнику: {overheatDamage}");
+        }
+
+        private void SetOverheated(bool value)
+        {
+            if (_isOverheated == value) return;
+            _isOverheated = value;
+
+            if (value) OnOverheated?.Invoke();
+            else       OnOverheatRecovered?.Invoke();
         }
 
         private void Lose()
         {
             if (baseRef != null && baseRef.IsAlive)
                 baseRef.GetDamage(baseRef.MaxHealth * 2f);
-
+            SetOverheated(false);
             Debug.Log("[HeatSystem] Тепло кончилось — проигрыш.");
             enabled = false;
         }
-        
+
         public void SetMaxHeat(float value) => maxHeat = Mathf.Max(1f, value);
         public void SetDecay(float perSecond) => decayPerSecond = perSecond;
     }

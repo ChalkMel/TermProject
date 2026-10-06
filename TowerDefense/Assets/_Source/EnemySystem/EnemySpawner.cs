@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
-using _Source.Resources;
-using _Source.Waves;
+using Resources;
+using BaseSystem;
+using EnemySystem.WavesSystem.Config;
 using TMPro;
 using UnityEngine;
 
-namespace _Source.EnemySystem
+namespace EnemySystem
 {
     public class EnemySpawner : MonoBehaviour
     {
@@ -20,8 +21,7 @@ namespace _Source.EnemySystem
         private bool _isSpawning;
         private Coroutine _currentWaveCoroutine;
         private bool _allWavesCompletedInvoked;
-
-        // --- Текущая волна ---
+        
         private readonly List<EnemyRuntime> _aliveEnemies = new();
         private int _spawnedInWave;
         private int _killedInWave;
@@ -36,7 +36,7 @@ namespace _Source.EnemySystem
         public System.Action<int> OnWaveStarted;
         public System.Action<int> OnWaveCompleted;
         public System.Action OnAllWavesCompleted;
-        public System.Action<int, int, int> OnWaveCountersChanged; // (killed, total)
+        public System.Action<int, int, int> OnWaveCountersChanged;
 
         private void Start()
         {
@@ -82,8 +82,7 @@ namespace _Source.EnemySystem
                 SpawnNextWave();
                 return;
             }
-
-            // --- Сброс волновых счётчиков ---
+            
             _aliveEnemies.Clear();
             _spawnedInWave = 0;
             _killedInWave = 0;
@@ -100,7 +99,7 @@ namespace _Source.EnemySystem
         {
             int total = 0;
             foreach (EnemyGroup g in wave.Groups)
-                if (g.enemy != null) total += g.count;
+                if (g.Enemy != null) total += g.Count;
             return total;
         }
 
@@ -110,14 +109,14 @@ namespace _Source.EnemySystem
 
             foreach (EnemyGroup group in currentWave.Groups)
             {
-                if (group.enemy == null) continue;
+                if (group.Enemy == null) continue;
 
-                for (int i = 0; i < group.count; i++)
+                for (int i = 0; i < group.Count; i++)
                 {
-                    SpawnEnemy(group.enemy);
+                    SpawnEnemy(group.Enemy);
 
-                    if (i < group.count - 1)
-                        yield return new WaitForSeconds(group.interval);
+                    if (i < group.Count - 1)
+                        yield return new WaitForSeconds(group.Interval);
                 }
             }
 
@@ -174,6 +173,7 @@ namespace _Source.EnemySystem
         private void HandleEnemyReachedBase(EnemyRuntime enemy)
         {
             _killedInWave++;
+            OnWaveCountersChanged?.Invoke(_killedInWave, _totalInWave, _currentWaveIndex+1);
             Unsubscribe(enemy);
         }
 

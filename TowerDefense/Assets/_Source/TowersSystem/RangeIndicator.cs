@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace _Source.TowersSystem
+namespace TowersSystem
 {
     public class RangeIndicator : MonoBehaviour
     {
