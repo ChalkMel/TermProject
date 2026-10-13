@@ -7,7 +7,7 @@ namespace EnemySystem.WavesSystem.Config
   {
     [field:SerializeField] public float Speed{get; private set; }
     [field:SerializeField] public int MaxHealth{get; private set; }
-    [field:SerializeField] public int Damage{get; private set; }
+    [field:SerializeField] public float Damage{get; private set; }
     [field:SerializeField] public int Reward{get; private set; }
     [field:SerializeField] public GameObject Prefab{get; private set; }
   }

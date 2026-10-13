@@ -17899,7 +17899,7 @@ MonoBehaviour:
   description: {fileID: 988518707}
   cost: {fileID: 309667858}
   icon: {fileID: 490195649}
-  offsetFromButton: {x: 0, y: 0}
+  offsetFromButton: {x: 25, y: 0}
 --- !u!114 &882607244
 MonoBehaviour:
   m_ObjectHideFlags: 0

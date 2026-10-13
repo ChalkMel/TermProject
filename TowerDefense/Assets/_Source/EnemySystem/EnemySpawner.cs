@@ -52,6 +52,7 @@ namespace EnemySystem
             _isSpawning = true;
             _allWavesCompletedInvoked = false;
             SpawnNextWave();
+            OnWaveCountersChanged?.Invoke(_killedInWave, _totalInWave, _currentWaveIndex+1);
         }
 
         public void StopSpawning()

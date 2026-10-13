@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: WaveTest 1
   m_EditorClassIdentifier: 
   groups:
+  - <Enemy>k__BackingField: {fileID: 11400000, guid: fb2487f1b07923f4f93ad02027b18f70, type: 2}
+    <Count>k__BackingField: 1
+    <Interval>k__BackingField: 0.3
   - <Enemy>k__BackingField: {fileID: 11400000, guid: 12494e8e4ce739042811614cbf7fdd6b, type: 2}
     <Count>k__BackingField: 3
     <Interval>k__BackingField: 5

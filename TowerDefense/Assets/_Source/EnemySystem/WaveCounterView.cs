@@ -17,7 +17,7 @@ namespace EnemySystem
       spawner.OnWaveCountersChanged += Draw;
 
       if (waveIndexText != null) waveIndexText.text = "";
-      if (counterText != null) counterText.text = "0 / 0";
+      if (counterText != null) counterText.text = "";
     }
 
     private void OnDestroy()

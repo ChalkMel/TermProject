@@ -23,7 +23,7 @@ namespace TowersSystem.BuildSystem
 
       var runtime = AddTowerComponent(go, config.Type);
       runtime.Initialize(config, cell);
-      SetupRangeDetection(runtime);
+
       return runtime;
     }
 
@@ -43,7 +43,7 @@ namespace TowersSystem.BuildSystem
       trigger.isTrigger = true;
       tower.gameObject.AddComponent<TowerRangeDetector>().Initialize(tower);
     }
-    
+
     public void Remove(TowerRuntimeBase tower)
     {
       if (tower == null) return;

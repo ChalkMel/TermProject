@@ -6,40 +6,28 @@ namespace TowersSystem.Runtimes
 {
     public class SlowdownTowerRuntime : TowerRuntimeBase
     {
-        private readonly int _slowBonusPerLevel = 10;
-        private readonly int _maxSlowPercent = 90;
+        [SerializeField] private int slowBonusPerLevel = 10;
+        [SerializeField] private int maxSlowPercent = 90;
 
         private readonly List<EnemyRuntime> _slowedEnemies = new();
         private int _levelBuffBonus;
-        
+
         public float EffectiveSlowPercent =>
-            Mathf.Min(Config.Buff + _levelBuffBonus, _maxSlowPercent);
+            Mathf.Min(Config.Buff + _levelBuffBonus, maxSlowPercent);
 
         protected override Color GizmoColor => new Color(0.4f, 0.7f, 1f);
 
         public override void UpgradeTower()
         {
-            float before = EffectiveSlowPercent;
             base.UpgradeTower();
-            _levelBuffBonus += _slowBonusPerLevel;
-
-            float after = EffectiveSlowPercent;
-            float delta = after - before;
-            if (delta <= 0) return;
-            
-            foreach (var e in _slowedEnemies)
-            {
-                if (e == null) continue;
-                e.RemoveSlow(before / 100f);
-                e.AddSlow(after / 100f);
-            }
+            _levelBuffBonus += slowBonusPerLevel;
+            RefreshSlows();
         }
 
         public override void OnEnemyEnteredRange(EnemyRuntime enemy)
         {
             if (enemy == null) return;
-
-            enemy.AddSlow(EffectiveSlowPercent / 100f);
+            enemy.Status.AddSlow(this, EffectiveSlowPercent / 100f);
             if (!_slowedEnemies.Contains(enemy))
                 _slowedEnemies.Add(enemy);
         }
@@ -47,16 +35,24 @@ namespace TowersSystem.Runtimes
         public override void OnEnemyExitedRange(EnemyRuntime enemy)
         {
             if (enemy == null) return;
-
-            enemy.RemoveSlow(EffectiveSlowPercent / 100f);
+            enemy.Status.RemoveSlow(this);
             _slowedEnemies.Remove(enemy);
+        }
+
+        private void RefreshSlows()
+        {
+            for (int i = _slowedEnemies.Count - 1; i >= 0; i--)
+            {
+                var e = _slowedEnemies[i];
+                if (e == null) { _slowedEnemies.RemoveAt(i); continue; }
+                e.Status.AddSlow(this, EffectiveSlowPercent / 100f);
+            }
         }
 
         public override void OnBeforeDestroy()
         {
-            float value = EffectiveSlowPercent / 100f;
             foreach (var e in _slowedEnemies)
-                if (e != null) e.RemoveSlow(value);
+                if (e != null) e.Status.RemoveSlow(this);
             _slowedEnemies.Clear();
         }
 

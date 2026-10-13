@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using TowersSystem.Stats;
 
 namespace TowersSystem.Runtimes
 {
@@ -10,8 +11,8 @@ namespace TowersSystem.Runtimes
 
         private readonly List<AttackerTowerRuntime> _buffedAttackers = new();
         private int _levelBuffBonus;
-        
-        public int EffectiveBuff => (int) (Config.Buff + _levelBuffBonus);
+
+        public int EffectiveBuff => (int)(Config.Buff + _levelBuffBonus);
 
         protected override Color GizmoColor => Color.cyan;
 
@@ -19,16 +20,14 @@ namespace TowersSystem.Runtimes
         {
             base.UpgradeTower();
             _levelBuffBonus += buffBonusPerLevel;
-            
-            foreach (var a in _buffedAttackers)
-                if (a != null) a.OnBufferValueChanged();
+            RefreshBuffs();
         }
 
         public override void OnTowerEnteredRange(TowerRuntimeBase other)
         {
             if (other is AttackerTowerRuntime attacker)
             {
-                attacker.RegisterBuffer(this);
+                ApplyBuff(attacker);
                 if (!_buffedAttackers.Contains(attacker))
                     _buffedAttackers.Add(attacker);
             }
@@ -38,15 +37,31 @@ namespace TowersSystem.Runtimes
         {
             if (other is AttackerTowerRuntime attacker)
             {
-                attacker.UnregisterBuffer(this);
+                RemoveBuff(attacker);
                 _buffedAttackers.Remove(attacker);
+            }
+        }
+
+        private void ApplyBuff(AttackerTowerRuntime attacker) =>
+            attacker.Status.AddMultiplier(this, TowerStat.OutgoingDamage, 1f + EffectiveBuff / 100f);
+
+        private void RemoveBuff(AttackerTowerRuntime attacker) =>
+            attacker.Status.RemoveMultiplier(this, TowerStat.OutgoingDamage);
+
+        private void RefreshBuffs()
+        {
+            for (int i = _buffedAttackers.Count - 1; i >= 0; i--)
+            {
+                var a = _buffedAttackers[i];
+                if (a == null) { _buffedAttackers.RemoveAt(i); continue; }
+                ApplyBuff(a);
             }
         }
 
         public override void OnBeforeDestroy()
         {
             foreach (var a in _buffedAttackers)
-                if (a != null) a.UnregisterBuffer(this);
+                if (a != null) RemoveBuff(a);
             _buffedAttackers.Clear();
         }
 

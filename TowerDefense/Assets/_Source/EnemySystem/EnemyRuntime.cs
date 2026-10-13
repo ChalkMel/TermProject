@@ -1,9 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Resources;
 using BaseSystem;
 using EnemySystem.WavesSystem.Config;
+using EnemySystem.Status;
 
 namespace EnemySystem
 {
@@ -14,8 +14,6 @@ namespace EnemySystem
 
         [Header("Death")]
         [SerializeField] private ParticleSystem deathParticles;
-        [Tooltip("Через сколько секунд после смерти удалять объект. " +
-                 "Должно быть >= длительности партикла, иначе он не доиграет.")]
         [SerializeField] private float deathDelay = 1f;
         [SerializeField] private bool autoDelayFromParticles = false;
         [SerializeField] private Collider2D bodyCollider;
@@ -27,20 +25,24 @@ namespace EnemySystem
         private float _currentHealth;
         private Credits _credits;
 
-        private readonly List<float> _activeSlows = new();
-        private float _slowMultiplier = 1f;
-        public float SlowMultiplier => _slowMultiplier;
-
-        private float _attackTimer;
         private bool _reachedBase;
         private bool _isDying;
+
+        public EnemyStatusController Status { get; private set; }
 
         public EnemyConfig Config => enemyType;
         public float CurrentHealth => _currentHealth;
         public bool IsAlive => !_isDying && _currentHealth > 0;
+        public float SlowMultiplier => Status != null ? Status.MoveSpeedMultiplier : 1f;
 
         public System.Action<EnemyRuntime> OnEnemyDied;
         public System.Action<EnemyRuntime> OnEnemyReachedBase;
+
+        private void Awake()
+        {
+            Status = GetComponent<EnemyStatusController>();
+            if (Status == null) Status = gameObject.AddComponent<EnemyStatusController>();
+        }
 
         public void Initialize(EnemyConfig config, EnemyPath path, Credits credits, Base baseRef)
         {
@@ -51,8 +53,6 @@ namespace EnemySystem
             _credits = credits;
             _base = baseRef;
 
-            _activeSlows.Clear();
-            _slowMultiplier = 1f;
             _reachedBase = false;
             _isDying = false;
 
@@ -69,7 +69,6 @@ namespace EnemySystem
         {
             if (_isDying) return;
             if (!IsAlive) return;
-
             Move();
         }
 
@@ -80,7 +79,7 @@ namespace EnemySystem
             Vector2 targetPoint = _path.GetNextPoint(_currentPointIndex);
             Vector2 direction = (targetPoint - (Vector2)transform.position).normalized;
 
-            float moveSpeed = enemyType.Speed * _slowMultiplier * Time.deltaTime;
+            float moveSpeed = enemyType.Speed * Status.MoveSpeedMultiplier * Time.deltaTime;
             transform.position += (Vector3)(direction * moveSpeed);
 
             if (Vector2.Distance(transform.position, targetPoint) < 0.1f)
@@ -92,63 +91,39 @@ namespace EnemySystem
             }
         }
 
-        public void AddSlow(float slowFraction)
-        {
-            _activeSlows.Add(Mathf.Clamp01(slowFraction));
-            RecalculateSlow();
-        }
-
-        public void RemoveSlow(float slowFraction)
-        {
-            _activeSlows.Remove(Mathf.Clamp01(slowFraction));
-            RecalculateSlow();
-        }
-
-        private void RecalculateSlow()
-        {
-            float strongest = 0f;
-            for (int i = 0; i < _activeSlows.Count; i++)
-                if (_activeSlows[i] > strongest)
-                    strongest = _activeSlows[i];
-
-            _slowMultiplier = 1f - strongest;
-        }
-
         private void ReachBase()
         {
             if (_isDying) return;
             _reachedBase = true;
 
-            _base.GetDamage(enemyType.Damage);
+            float damage = enemyType.Damage * Status.DamageMultiplier;
+            _base.GetDamage(damage);
             OnEnemyReachedBase?.Invoke(this);
             Destroy(gameObject);
         }
 
-        public void TakeDamage(int damage)
+        public void TakeDamage(float damage)
         {
             if (_isDying) return;
 
             _currentHealth -= damage;
             if (healthBar != null)
-                healthBar.SetValue(enemyType.MaxHealth > 0
-                    ? _currentHealth / enemyType.MaxHealth
-                    : 0f);
+                healthBar.SetValue(enemyType.MaxHealth > 0 ? _currentHealth / enemyType.MaxHealth : 0f);
 
-            if (_currentHealth <= 0)
-                Die();
+            if (_currentHealth <= 0) Die();
         }
 
         private void Die()
         {
             if (_isDying) return;
             _isDying = true;
-            
+
             OnEnemyDied?.Invoke(this);
             _credits.AddMoney(enemyType.Reward);
-            
+
             if (bodyCollider != null) bodyCollider.enabled = false;
             if (healthBar != null) healthBar.Hide();
-            
+
             float delay = deathDelay;
             if (deathParticles != null)
             {
@@ -159,7 +134,7 @@ namespace EnemySystem
                     delay = main.duration + main.startLifetime.constantMax;
                 }
             }
-            
+
             StartCoroutine(DeathRoutine(delay));
         }
 

@@ -10,12 +10,12 @@ namespace TowersSystem.Runtimes
     [SerializeField] private float rotateToDirection = 0f;
 
     private EnemyRuntime _target;
-    private int _damage;
+    private float _damage;
     private float _speed;
     private float _lifeTimer;
     private AttackerTowerRuntime _tower;
 
-    public void Initialize(EnemyRuntime target, int damage, float speed, AttackerTowerRuntime attacker)
+    public void Initialize(EnemyRuntime target, float damage, float speed, AttackerTowerRuntime attacker)
     {
       _target = target;
       _damage = damage;
