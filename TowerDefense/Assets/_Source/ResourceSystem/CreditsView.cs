@@ -1,3 +1,4 @@
+using Resources;
 using TMPro;
 using UnityEngine;
 
@@ -5,16 +6,19 @@ namespace Resources
 {
     public class CreditsView : MonoBehaviour
     {
-        [SerializeField] private Credits credits;
+        private Credits _credits;
         [SerializeField] private TextMeshProUGUI moneyText;
-        private void Awake()
+
+        public void Init(Credits credits)
         {
-            credits.MoneyChanged += DrawMoney;
+            _credits = credits;
+            _credits.MoneyChanged += DrawMoney;
+            DrawMoney(_credits.GetMoney());
         }
     
         private void OnDestroy()
         {
-            credits.MoneyChanged -= DrawMoney;
+            _credits.MoneyChanged -= DrawMoney;
         }
 
         private void DrawMoney(int money)

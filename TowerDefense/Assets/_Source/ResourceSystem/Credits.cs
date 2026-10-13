@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Resources
 {
-    public class Credits //Убери монобех
+    public class Credits
     {
         [SerializeField] private int _money = 120;
     

@@ -10,7 +10,7 @@ namespace EnemySystem
 {
     public class EnemySpawner : MonoBehaviour
     {
-        [SerializeField] private Credits credits;
+        private Credits _credits;
         [SerializeField] private WaveGroups waveGroups;
         [SerializeField] private EnemyPath path;
         [SerializeField] private Transform spawnPoint;
@@ -38,12 +38,13 @@ namespace EnemySystem
         public System.Action OnAllWavesCompleted;
         public System.Action<int, int, int> OnWaveCountersChanged;
 
-        private void Start()
+        public void Init(Credits credits)
         {
+            _credits = credits;
             StartSpawning();
         }
 
-        public void StartSpawning()
+        private void StartSpawning()
         {
             if (waveGroups == null || waveGroups.WaveCount == 0) return;
 
@@ -154,7 +155,7 @@ namespace EnemySystem
             EnemyRuntime enemyRuntime = enemyObj.GetComponent<EnemyRuntime>();
             if (enemyRuntime == null) return;
 
-            enemyRuntime.Initialize(enemyConfig, path, credits, baseRef);
+            enemyRuntime.Initialize(enemyConfig, path, _credits, baseRef);
             enemyRuntime.OnEnemyDied += HandleEnemyDied;
             enemyRuntime.OnEnemyReachedBase += HandleEnemyReachedBase;
 

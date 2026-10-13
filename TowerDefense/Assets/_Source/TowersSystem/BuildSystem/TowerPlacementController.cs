@@ -14,8 +14,7 @@ namespace TowersSystem.BuildSystem
         [SerializeField] private TowerMenu menu;
         [SerializeField] private Camera cam;
         [SerializeField] private Tilemap tilemap;
-        [SerializeField] private SpriteRenderer highlighter;
-        [SerializeField] private Credits credits;
+        private Credits _credits;
 
         [Header("Tooltip")]
         [SerializeField] private TowerTooltip tooltip;
@@ -26,59 +25,118 @@ namespace TowersSystem.BuildSystem
         private PlacementPreview _preview;
         private TowerInteractionController _interaction;
 
-        private Vector3Int _pendingCell;
-        private bool _hasPendingCell;
-        
+        private TowerConfig _selectedConfig;
+
         public void Initialize(
             PlacedTowerRegistry registry,
             TowerFactory factory,
             PlacementPreview preview,
-            TowerInteractionController interaction)
+            TowerInteractionController interaction,
+            Credits credits)
         {
             _registry = registry;
             _factory = factory;
             _preview = preview;
             _interaction = interaction;
+            _credits = credits;
         }
 
         private void Awake()
         {
-            menu.TowerChosen       += OnTowerChosen;
-            menu.TowerHoverStarted += OnTowerHoverStarted;
-            menu.TowerHoverEnded   += OnTowerHoverEnded;
-            menu.Hide();
+            menu.TowerChosen += OnTowerChosen;
 
             if (tooltip != null)
             {
                 tooltip.SetBuilder(this);
                 tooltip.Hide();
             }
-
-            if (highlighter != null)
-                highlighter.gameObject.SetActive(false);
         }
 
         private void OnDestroy()
         {
-            menu.TowerChosen       -= OnTowerChosen;
-            menu.TowerHoverStarted -= OnTowerHoverStarted;
-            menu.TowerHoverEnded   -= OnTowerHoverEnded;
+            menu.TowerChosen -= OnTowerChosen;
         }
 
         private void Update()
         {
+            if (_selectedConfig != null) HandlePlacementUpdate();
+            else HandleTooltipUpdate();
+        }
+
+        private void HandlePlacementUpdate()
+        {
+            Vector3Int cell = GetCellUnderMouse();
+            Vector3 worldPos = tilemap.GetCellCenterWorld(cell);
+            bool valid = CanPlace(cell);
+
+            _preview.Show(_selectedConfig, worldPos, tilemap.cellSize, valid);
+
             if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
             {
-                if (_hasPendingCell) CancelPlacement();
-                else if (tooltip != null && tooltip.gameObject.activeSelf) _interaction.Hide();
+                CancelPlacement();
                 return;
             }
 
             if (Input.GetMouseButtonDown(0))
             {
-                if (EventSystem.current.IsPointerOverGameObject()) return;
-                HandleCellClick(GetCellUnderMouse());
+                if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+                if (!valid) return;
+
+                PlaceTower(_selectedConfig, cell);
+                // Выбор сохраняется — можно ставить несколько башен подряд.
             }
+        }
+
+        private void HandleTooltipUpdate()
+        {
+            if (Input.GetMouseButtonDown(1) || Input.GetKeyDown(KeyCode.Escape))
+            {
+                if (tooltip != null && tooltip.gameObject.activeSelf) _interaction.Hide();
+                return;
+            }
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject()) return;
+                if (tooltip != null && tooltip.gameObject.activeSelf) _interaction.Hide();
+
+                if (_registry.TryGet(GetCellUnderMouse(), out TowerRuntimeBase existing))
+                    _interaction.Show(existing, GetTooltipScreenPos(existing.CellPosition));
+            }
+        }
+
+        private bool CanPlace(Vector3Int cell)
+        {
+            if (_registry.Contains(cell)) return false;
+            if (tilemap.GetTile(cell) != null) return false;
+            if (_credits.GetMoney() < _selectedConfig.Cost) return false;
+            return true;
+        }
+
+        private void PlaceTower(TowerConfig config, Vector3Int cell)
+        {
+            if (!_credits.TrySpendMoney(config.Cost)) return;
+            if (_registry.Contains(cell)) return;
+
+            TowerRuntimeBase tower = _factory.Create(config, cell);
+            _registry.TryAdd(cell, tower);
+        }
+
+        private void OnTowerChosen(TowerConfig config)
+        {
+            if (config == null) { CancelPlacement(); return; }
+
+            _selectedConfig = config;
+            if (tooltip != null && tooltip.gameObject.activeSelf) _interaction.Hide();
+        }
+
+        private void CancelPlacement()
+        {
+            if (_selectedConfig == null) return;
+
+            _selectedConfig = null;
+            _preview.Hide();
+            menu.ClearSelection(); // снимет подсветку кнопки; повторно TowerChosen(null) не зацикливается
         }
 
         private Vector3Int GetCellUnderMouse()
@@ -88,78 +146,7 @@ namespace TowersSystem.BuildSystem
             return tilemap.WorldToCell(worldPos);
         }
 
-        private void HandleCellClick(Vector3Int cell)
-        {
-            _preview.Hide();
-            if (tooltip != null && tooltip.gameObject.activeSelf) _interaction.Hide();
-            
-            if (_registry.TryGet(cell, out TowerRuntimeBase existing))
-            {
-                _interaction.Show(existing, GetTooltipScreenPos(cell));
-                return;
-            }
-
-            if (tilemap.GetTile(cell) != null) return;
-
-            BeginPlacement(cell);
-        }
-
-        private void BeginPlacement(Vector3Int cell)
-        {
-            _pendingCell = cell;
-            _hasPendingCell = true;
-
-            if (highlighter != null)
-            {
-                highlighter.gameObject.SetActive(true);
-                highlighter.transform.position = tilemap.GetCellCenterWorld(cell);
-            }
-
-            menu.Show();
-        }
-
-        private void OnTowerChosen(TowerConfig config)
-        {
-            if (!_hasPendingCell || config == null) { CancelPlacement(); return; }
-
-            if (!credits.TrySpendMoney(config.Cost)) { CancelPlacement(); return; }
-
-            if (_registry.Contains(_pendingCell))
-            {
-                CancelPlacement();
-                return;
-            }
-
-            TowerRuntimeBase tower = _factory.Create(config, _pendingCell);
-            _registry.TryAdd(_pendingCell, tower);
-            CancelPlacement();
-        }
-
-        private void OnTowerHoverStarted(TowerConfig config)
-        {
-            if (!_hasPendingCell || config == null) return;
-
-            Vector3 worldPos = tilemap.GetCellCenterWorld(_pendingCell);
-            _preview.Show(config, worldPos, tilemap.cellSize);
-
-            if (highlighter != null) highlighter.gameObject.SetActive(false);
-        }
-
-        private void OnTowerHoverEnded(TowerConfig config)
-        {
-            _preview.Hide();
-
-            if (_hasPendingCell && highlighter != null)
-            {
-                highlighter.gameObject.SetActive(true);
-                highlighter.transform.position = tilemap.GetCellCenterWorld(_pendingCell);
-            }
-        }
-
-        public void UpgradeTower(TowerRuntimeBase tower)
-        {
-            _interaction.TryUpgrade(tower);
-        }
+        public void UpgradeTower(TowerRuntimeBase tower) => _interaction.TryUpgrade(tower);
 
         public void SellTower(TowerRuntimeBase tower)
         {
@@ -174,16 +161,6 @@ namespace TowersSystem.BuildSystem
         {
             Vector3 worldPos = tilemap.GetCellCenterWorld(cell);
             return cam.WorldToScreenPoint(worldPos) + tooltipScreenOffset;
-        }
-
-        private void CancelPlacement()
-        {
-            _hasPendingCell = false;
-            menu.Hide();
-            _preview.Hide();
-
-            if (highlighter != null)
-                highlighter.gameObject.SetActive(false);
         }
     }
 }

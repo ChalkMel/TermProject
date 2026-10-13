@@ -9,42 +9,52 @@ namespace TowersSystem.Menu
   public class TowerMenuButton : MonoBehaviour,
     IPointerEnterHandler, IPointerExitHandler
   {
-    [SerializeField] private TextMeshProUGUI text;
+    [SerializeField] private Image image;
+    [SerializeField] private Color selectedColor = new Color(0.4f, 0.4f, 0.4f);
     public TowerMenu Menu;
 
-    private TowerConfig _tower;
+    private Button _button;
+    private Color _normalColor;
+
+    public TowerConfig Tower { get; private set; }
 
     private void Awake()
     {
-      GetComponent<Button>().onClick.AddListener(ChooseTower);
+      _button = GetComponent<Button>();
+      _button.onClick.AddListener(ChooseTower);
+      _normalColor = image.color;
     }
 
-    public void DrawText(TowerConfig tower)
+    public void Draw(TowerConfig tower)
     {
-      _tower = tower;
-      text.text = $"{_tower.Name}";
-      
+      Tower = tower;
+      image.sprite = Tower.Tile.sprite;
+    }
+
+    public void SetSelected(bool selected)
+    {
+      image.color = selected ? selectedColor : _normalColor;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-      if (_tower != null)
-        Menu.NotifyHoverStarted(_tower, (RectTransform)transform);
+      if (Tower != null)
+        Menu.NotifyHoverStarted(Tower, (RectTransform)transform);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-      if (_tower == null) return;
-
+      if (Tower == null) return;
+      
       if (eventData.pointerEnter != null)
       {
         var next = eventData.pointerEnter.GetComponentInParent<TowerMenuButton>();
-        if (next != null) return;
+        if (next != null && next != this) return;
       }
 
-      Menu.NotifyHoverEnded(_tower);
+      Menu.NotifyHoverEnded(Tower);
     }
 
-    private void ChooseTower() => Menu.SelectTower(_tower);
+    private void ChooseTower() => Menu.SelectTower(Tower);
   }
 }

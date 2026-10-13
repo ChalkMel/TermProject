@@ -16,36 +16,61 @@ namespace TowersSystem.Menu
     public event Action<TowerConfig> TowerHoverStarted;
     public event Action<TowerConfig> TowerHoverEnded;
 
+    public TowerConfig SelectedTower { get; private set; }
+
+    private readonly List<TowerMenuButton> _buttons = new();
+
     private void Awake()
     {
       DrawButtons();
-      Hide();
+      if (menu != null) menu.SetActive(true);
     }
 
     public void Show()
     {
-      menu.SetActive(true);
+      if (menu != null) menu.SetActive(true);
       if (menuTooltip != null) menuTooltip.Hide();
     }
 
     public void Hide()
     {
-      menu.SetActive(false);
+      if (menu != null) menu.SetActive(false);
       if (menuTooltip != null) menuTooltip.Hide();
     }
 
     private void DrawButtons()
     {
+      _buttons.Clear();
       foreach (TowerConfig t in towers)
       {
         var button = Instantiate(buttonPrefab, Vector3.zero, Quaternion.identity, transform);
         var comp = button.GetComponentInChildren<TowerMenuButton>();
-        comp.DrawText(t);
+        comp.Draw(t);
         comp.Menu = this;
+        _buttons.Add(comp);
       }
     }
+    
+    public void SelectTower(TowerConfig tower)
+    {
+      var newSelection = (SelectedTower == tower) ? null : tower;
+      SetSelection(newSelection);
+      TowerChosen?.Invoke(SelectedTower);
+    }
 
-    public void SelectTower(TowerConfig tower) => TowerChosen?.Invoke(tower);
+    public void ClearSelection()
+    {
+      if (SelectedTower == null) return;
+      SetSelection(null);
+      TowerChosen?.Invoke(null);
+    }
+
+    private void SetSelection(TowerConfig tower)
+    {
+      SelectedTower = tower;
+      foreach (var b in _buttons)
+        b.SetSelected(tower != null && b.Tower == tower);
+    }
 
     public void NotifyHoverStarted(TowerConfig tower, RectTransform buttonRect)
     {

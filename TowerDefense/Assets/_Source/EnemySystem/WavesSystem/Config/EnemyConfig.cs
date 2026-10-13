@@ -10,6 +10,5 @@ namespace EnemySystem.WavesSystem.Config
     [field:SerializeField] public int Damage{get; private set; }
     [field:SerializeField] public int Reward{get; private set; }
     [field:SerializeField] public GameObject Prefab{get; private set; }
-    [field:SerializeField] public float AttackInterval {get; private set; }
   }
 }

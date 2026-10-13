@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2239f8ebb6bb604da0ec8e9cf7954bb, type: 3}
   m_Name: StrongEnemy
   m_EditorClassIdentifier: 
-  speed: 1.65
-  maxHealth: 100
-  damage: 10
-  reward: 3
-  prefab: {fileID: 863255446774729516, guid: 0e9cc2c0142c5044e92a888eab3b6418, type: 3}
-  attackInterval: 8
+  <Speed>k__BackingField: 0.65
+  <MaxHealth>k__BackingField: 100
+  <Damage>k__BackingField: 20
+  <Reward>k__BackingField: 20
+  <Prefab>k__BackingField: {fileID: 863255446774729516, guid: 0e9cc2c0142c5044e92a888eab3b6418, type: 3}

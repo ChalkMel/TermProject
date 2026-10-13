@@ -5,7 +5,9 @@ namespace TowersSystem.BuildSystem
 {
   public class PlacementPreview : MonoBehaviour
   {
-    [SerializeField] private Color rangeColor = new(0.2f, 0.8f, 1f, 0.6f);
+    [SerializeField] private Color rangeColor   = new(0.2f, 0.8f, 1f, 0.6f);
+    [SerializeField] private Color validColor   = new(1f, 1f, 1f, 0.6f);
+    [SerializeField] private Color invalidColor = new(1f, 0.4f, 0.4f, 0.6f);
 
     private RangeIndicator _range;
     private SpriteRenderer _sprite;
@@ -20,19 +22,20 @@ namespace TowersSystem.BuildSystem
       var spriteGo = new GameObject("PreviewSprite");
       spriteGo.transform.SetParent(transform, false);
       _sprite = spriteGo.AddComponent<SpriteRenderer>();
-      _sprite.color = new Color(1f, 1f, 1f, 0.6f);
+      _sprite.color = validColor;
       _sprite.sortingOrder = 99;
       _sprite.enabled = false;
     }
 
-    public void Show(TowerConfig config, Vector3 worldPos, Vector3 cellSize)
+    public void Show(TowerConfig config, Vector3 worldPos, Vector3 cellSize, bool valid = true)
     {
       _range.Show(worldPos, config.Range);
 
-      if (config.Tile?.sprite == null) return;
+      if (config.Tile?.sprite == null) { _sprite.enabled = false; return; }
 
       _sprite.sprite = config.Tile.sprite;
       _sprite.transform.position = worldPos;
+      _sprite.color = valid ? validColor : invalidColor;
       _sprite.enabled = true;
 
       var s = config.Tile.sprite.bounds.size;

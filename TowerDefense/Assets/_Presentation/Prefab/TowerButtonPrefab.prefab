@@ -68,9 +68,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
+  m_Sprite: {fileID: -1818199651, guid: 8b03c7a243092904c90d7608a7eada12, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -134,7 +134,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 704ac8a428b45774b81073c03bec4201, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  text: {fileID: 8896913586272769056}
+  image: {fileID: 1005001261143042280}
+  selectedColor: {r: 0.4, g: 0.4, b: 0.4, a: 1}
   Menu: {fileID: 0}
 --- !u!1 &7730361021965054092
 GameObject:
@@ -153,7 +154,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6122566414759902813
 RectTransform:
   m_ObjectHideFlags: 0
