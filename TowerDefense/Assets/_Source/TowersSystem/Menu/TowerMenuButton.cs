@@ -1,10 +1,13 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TowersSystem.Config;
 
-namespace _Source.TowersSystem.Menu
+namespace TowersSystem.Menu
 {
-  public class TowerMenuButton : MonoBehaviour
+  public class TowerMenuButton : MonoBehaviour,
+    IPointerEnterHandler, IPointerExitHandler
   {
     [SerializeField] private TextMeshProUGUI text;
     public TowerMenu Menu;
@@ -19,17 +22,29 @@ namespace _Source.TowersSystem.Menu
     public void DrawText(TowerConfig tower)
     {
       _tower = tower;
-      text.text = $"{_tower.Name}\n" +
-                  $"Cost:{_tower.Cost}\n" +
-                  $"Damage:{_tower.Damage}\n" +
-                  $"Cooldown:{_tower.Cooldown}";
-      var image = GetComponent<Image>();
-      image.sprite = _tower.Tile.sprite;
+      text.text = $"{_tower.Name}";
+      
     }
 
-    private void ChooseTower()
+    public void OnPointerEnter(PointerEventData eventData)
     {
-      Menu.SelectTower(_tower);
+      if (_tower != null)
+        Menu.NotifyHoverStarted(_tower, (RectTransform)transform);
     }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+      if (_tower == null) return;
+
+      if (eventData.pointerEnter != null)
+      {
+        var next = eventData.pointerEnter.GetComponentInParent<TowerMenuButton>();
+        if (next != null) return;
+      }
+
+      Menu.NotifyHoverEnded(_tower);
+    }
+
+    private void ChooseTower() => Menu.SelectTower(_tower);
   }
 }
