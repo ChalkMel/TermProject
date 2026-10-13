@@ -120,18 +120,18 @@ namespace TowersSystem.BuildSystem
 
         private void OnTowerChosen(TowerConfig config)
         {
-            if (!_hasPendingCell || config == null)
+            if (!_hasPendingCell || config == null) { CancelPlacement(); return; }
+
+            if (!credits.TrySpendMoney(config.Cost)) { CancelPlacement(); return; }
+
+            if (_registry.Contains(_pendingCell))
             {
                 CancelPlacement();
                 return;
             }
 
-            if (credits.TrySpendMoney(config.Cost))
-            {
-                TowerRuntimeBase tower = _factory.Create(config, _pendingCell);
-                _registry.Add(_pendingCell, tower);
-            }
-
+            TowerRuntimeBase tower = _factory.Create(config, _pendingCell);
+            _registry.TryAdd(_pendingCell, tower);
             CancelPlacement();
         }
 

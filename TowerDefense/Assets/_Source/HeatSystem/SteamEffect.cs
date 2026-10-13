@@ -6,14 +6,12 @@ namespace HeatSystem
     {
         [SerializeField] private HeatSystem heatSystem;
         [SerializeField] private GameObject steamObject;
-
-        private Animator _animator;
+        
         private ParticleSystem _particles;
         private bool _isVisible;
 
         private void Awake()
         { 
-            _animator = steamObject.GetComponentInChildren<Animator>();
             HideSteam();
         }
 

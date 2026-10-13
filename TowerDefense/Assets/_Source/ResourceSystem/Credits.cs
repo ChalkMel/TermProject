@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace Resources
 {
-    public class Credits : MonoBehaviour
+    public class Credits //Убери монобех
     {
         [SerializeField] private int _money = 120;
     
-        public event Action<int> MoneyChanged; // On event <int>
+        public event Action<int> MoneyChanged;
     
         public int GetMoney()
         {

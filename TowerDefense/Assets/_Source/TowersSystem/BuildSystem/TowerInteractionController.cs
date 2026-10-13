@@ -4,18 +4,28 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace TowersSystem.BuildSystem
 {
-  public class TowerInteractionController
+  public class TowerInteractionController : System.IDisposable
   {
     private readonly Credits _credits;
     private readonly TowerTooltip _tooltip;
     private readonly RangeIndicator _range;
+    private bool _disposed;
 
     public TowerInteractionController(Credits credits, TowerTooltip tooltip, RangeIndicator range)
     {
       _credits = credits;
       _tooltip = tooltip;
-      _range = range;
-      _tooltip.OnHidden += () => _range.Hide();
+      _range   = range;
+      _tooltip.OnHidden += HandleTooltipHidden;
+    }
+
+    private void HandleTooltipHidden() => _range.Hide();
+
+    public void Dispose()
+    {
+      if (_disposed) return;
+      _disposed = true;
+      _tooltip.OnHidden -= HandleTooltipHidden;
     }
 
     public void Show(TowerRuntimeBase tower, Vector3 screenPos)

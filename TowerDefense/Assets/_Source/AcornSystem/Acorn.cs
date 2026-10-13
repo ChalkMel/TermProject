@@ -11,7 +11,7 @@ namespace AcornSystem
     private int _reward;
     private bool _picked;
 
-    public System.Action<Acorn> OnPickedUp;
+    public event System.Action<Acorn> OnPickedUp;
 
     public void Initialize(AcornSpawner spawner, Credits credits, int reward)
     {

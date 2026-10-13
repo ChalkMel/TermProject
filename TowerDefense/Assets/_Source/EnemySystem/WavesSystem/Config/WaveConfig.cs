@@ -15,7 +15,7 @@ namespace EnemySystem.WavesSystem.Config
   }
 
   [System.Serializable]
-    public class EnemyGroup //сеттеры
+    public class EnemyGroup 
     {
       [field:SerializeField] public EnemyConfig Enemy { get; private set; }
       [field:SerializeField] public int Count{ get; private set; }

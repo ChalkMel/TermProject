@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Resources
 {
-    public class CreditsUI : MonoBehaviour
+    public class CreditsView : MonoBehaviour
     {
         [SerializeField] private Credits credits;
         [SerializeField] private TextMeshProUGUI moneyText;

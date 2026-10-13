@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace HeatSystem
 {
-  public class HeatUI : MonoBehaviour
+  public class HeatView : MonoBehaviour
   {
     [SerializeField] private HeatSystem heatSystem;
     [SerializeField] private Image fillBar;

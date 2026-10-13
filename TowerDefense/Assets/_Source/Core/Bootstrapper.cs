@@ -13,18 +13,29 @@ namespace Core
     [SerializeField] private Credits credits;
     [SerializeField] private Tilemap towerTilemap;
 
+    private PlacedTowerRegistry _registry;
+    private TowerFactory _factory;
+    private PlacementPreview _preview;
+    private TowerInteractionController _interaction;
+    private RangeIndicator _placementRange;
+    
     private void Awake()
     {
-      var placedRange = new GameObject("PlacedRangeIndicator")
+      _placementRange = new GameObject("PlacedRangeIndicator")
         .AddComponent<RangeIndicator>();
-      placedRange.SetColor(new Color(1f, 1f, 0f, 0.6f));
+      _placementRange.SetColor(new Color(1f, 1f, 0f, 0.6f));
 
-      var registry = new PlacedTowerRegistry();
-      var factory = new TowerFactory(towerTilemap);
-      var preview = placementController.gameObject.AddComponent<PlacementPreview>();
-      var interaction = new TowerInteractionController(credits, tooltip, placedRange);
+      _registry = new PlacedTowerRegistry();
+      _factory = new TowerFactory(towerTilemap);
+      _preview = placementController.gameObject.AddComponent<PlacementPreview>();
+      _interaction = new TowerInteractionController(credits, tooltip, _placementRange);
 
-      placementController.Initialize(registry, factory, preview, interaction);
+      placementController.Initialize(_registry, _factory, _preview, _interaction);
+    }
+    
+    private void OnDestroy()
+    {
+      _interaction?.Dispose();
     }
   }
 }

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace EnemySystem
 {
-  public class WaveCounterUI : MonoBehaviour
+  public class WaveCounterView : MonoBehaviour
   {
     [SerializeField] private EnemySpawner spawner;
     [SerializeField] private TextMeshProUGUI waveIndexText;
