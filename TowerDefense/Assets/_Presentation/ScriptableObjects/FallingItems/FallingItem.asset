@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00bd84fea2f747baa14b2be475cdaa12, type: 3}
+  m_Name: FallingItem
+  m_EditorClassIdentifier: 
+  <DisplayName>k__BackingField: Acorn
+  <Sprite>k__BackingField: {fileID: 6078440692077012814, guid: 4360d54174855564e8c8a7954281a9d3, type: 3}
+  <Tint>k__BackingField: {r: 1, g: 1, b: 1, a: 1}
+  <FallSpeed>k__BackingField: 5
+  <Prefab>k__BackingField: {fileID: 4031455462194115960, guid: 2d62863590d2e8b4db5f5824ff85d510, type: 3}
+  <CatchScore>k__BackingField: 1
+  <CatchHealthDelta>k__BackingField: 0
+  <MissScore>k__BackingField: -2
+  <MissHealthDelta>k__BackingField: -2
