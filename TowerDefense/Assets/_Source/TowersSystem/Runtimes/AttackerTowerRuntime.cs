@@ -10,6 +10,7 @@ namespace TowersSystem.Runtimes
         private readonly List<EnemyRuntime> _enemiesInRange = new();
         private EnemyRuntime _currentTarget;
         private float _levelDamageBonus;
+        private int maxLevel = 7;
         
 
         public float Damage =>
@@ -19,11 +20,11 @@ namespace TowersSystem.Runtimes
 
         protected override Color GizmoColor => Color.yellow;
 
-        public override void UpgradeTower()
+        public override bool UpgradeTower()
         {
-            base.UpgradeTower();
+            if (!base.UpgradeTower()) return false;
             _levelDamageBonus += Config.Damage * 0.3f;
-
+            return true;
         }
 
         private void Update()

@@ -55,8 +55,10 @@ namespace TowersSystem
       gameObject.SetActive(true);
 
       infoText.text        = tower.GetTooltipText();
-      upgradeCostText.text = $"Upgrade: {tower.GetUpgradeCost()}";
+      upgradeCostText.text = tower.IsMaxLevel ? "MAX" : $"Upgrade: {tower.GetUpgradeCost()}";
       sellPriceText.text   = $"Sell: {tower.GetSellPrice()}";
+      
+      upgradeButton.interactable = !tower.IsMaxLevel;
       
       DrawUpgradePreview(tower);
       
@@ -105,16 +107,25 @@ namespace TowersSystem
     
     private void DrawUpgradePreview(TowerRuntimeBase tower)
     {
-      if (upgradePreviewText == null) return;
+        if (upgradePreviewText == null) return;
 
-      string preview = tower.GetUpgradePreviewText();
-      bool hasPreview = !string.IsNullOrEmpty(preview);
+        if (tower.IsMaxLevel)
+        {
+          upgradePreviewText.gameObject.SetActive(true);
+          upgradePreviewText.text = "Max level";
+          return;
+        }
 
-      upgradePreviewText.gameObject.SetActive(hasPreview);
-      if (!hasPreview) return;
+        string preview = tower.GetUpgradePreviewText();
+        if (string.IsNullOrEmpty(preview))
+        {
+          upgradePreviewText.gameObject.SetActive(false);
+          return;
+        }
 
-      upgradePreviewText.text = "<i>Next level:</i>\n" + preview;
-    }
+        upgradePreviewText.gameObject.SetActive(true);
+        upgradePreviewText.text = "Next level:\n" + preview;
+      }
 
     private void OnUpgradeClicked()
     {

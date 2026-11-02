@@ -5,6 +5,7 @@ namespace TowersSystem.Runtimes
   public class StunTowerRuntime : AttackerTowerRuntime
   {
     [SerializeField] private float stunBonusPerLevel = 0.15f;
+    private int maxLevel = 3;
 
     private float _levelStunBonus;
 
@@ -12,10 +13,11 @@ namespace TowersSystem.Runtimes
 
     protected override Color GizmoColor => new Color(0.8f, 0.4f, 1f);
 
-    public override void UpgradeTower()
+    public override bool UpgradeTower()
     {
-      base.UpgradeTower();
+      if (!base.UpgradeTower()) return false;
       _levelStunBonus += stunBonusPerLevel;
+      return true;
     }
 
     public override string GetTooltipText()

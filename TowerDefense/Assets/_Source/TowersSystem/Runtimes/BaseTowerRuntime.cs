@@ -16,6 +16,9 @@ namespace TowersSystem.Runtimes
 
     public TowerStatusController Status { get; private set; }
 
+    protected int maxLevel = 5;
+    public bool IsMaxLevel => Level >= maxLevel;
+    
     protected float _levelRangeBonus;
     protected const float level_range_bonus = .2f;
     public bool CanBeBought;
@@ -41,11 +44,13 @@ namespace TowersSystem.Runtimes
     public virtual int GetUpgradeCost() => Mathf.Max(Config.Cost / 2 * Level);
     public virtual int GetSellPrice() => Mathf.Max(1, Config.Cost * Level / 4);
 
-    public virtual void UpgradeTower()
+    public virtual bool UpgradeTower()
     {
+      if (IsMaxLevel) return false;
       Level++;
       _levelRangeBonus += level_range_bonus;
       OnRangeChanged?.Invoke(Range);
+      return true;
     }
 
     public virtual void OnEnemyEnteredRange(EnemyRuntime enemy) { }
@@ -57,7 +62,8 @@ namespace TowersSystem.Runtimes
 
     public virtual string GetTooltipText() =>
       $"<b>{Config.Name}</b> (Lv. {Level})\nRange: {Range:F1}";
-    public virtual string GetUpgradePreviewText() => null;
+    public virtual string GetUpgradePreviewText() =>
+      null;
 
     protected abstract Color GizmoColor { get; }
 

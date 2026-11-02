@@ -18,8 +18,9 @@ MonoBehaviour:
   <Damage>k__BackingField: 15
   <ProjectilePrefab>k__BackingField: {fileID: 5142307322227042123, guid: 51dd6730dee405141b3205b16c802015, type: 3}
   <Buff>k__BackingField: 0
+  <StunDuration>k__BackingField: 0.5
   <Cost>k__BackingField: 75
-  <Range>k__BackingField: 3
+  <Range>k__BackingField: 2.5
   <Tile>k__BackingField: {fileID: 11400000, guid: a22e53239018369449a39b5ad1500d0a, type: 2}
   <Prefab>k__BackingField: {fileID: 1382389597540801863, guid: 975d9e2ac30ff4d4c8143446aa5a62c4, type: 3}
   <ProjectileSpeed>k__BackingField: 7

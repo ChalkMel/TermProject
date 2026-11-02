@@ -38,11 +38,16 @@ namespace TowersSystem.BuildSystem
     public bool TryUpgrade(TowerRuntimeBase tower)
     {
       if (tower == null) return false;
+      if (tower.IsMaxLevel) return false;
       if (!_credits.TrySpendMoney(tower.GetUpgradeCost())) return false;
 
-      tower.UpgradeTower();
-      var screen = Camera.main.WorldToScreenPoint(tower.transform.position);
-      _tooltip.Show(tower, screen);
+      if (!tower.UpgradeTower())
+      {
+        _credits.AddMoney(tower.GetUpgradeCost());
+        return false;
+      }
+      
+      _tooltip.Show(tower, Camera.main.WorldToScreenPoint(tower.transform.position));
       _range.Show(tower.transform.position, tower.Range);
       return true;
     }

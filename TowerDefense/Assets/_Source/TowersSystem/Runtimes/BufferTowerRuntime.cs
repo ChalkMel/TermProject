@@ -9,6 +9,7 @@ namespace TowersSystem.Runtimes
         [Header("Upgrade Bonus")]
         private const int buff_bonus_per_level = 5;
         private const float range_bonus_per_level = 0.2f;
+        private int maxLevel = 5;
 
         private readonly List<AttackerTowerRuntime> _buffedAttackers = new();
         private int _levelBuffBonus;
@@ -17,12 +18,13 @@ namespace TowersSystem.Runtimes
 
         protected override Color GizmoColor => Color.cyan;
 
-        public override void UpgradeTower()
+        public override bool UpgradeTower()
         {
-            base.UpgradeTower();
+            if (!base.UpgradeTower()) return false;
             _levelBuffBonus += buff_bonus_per_level;
             _levelRangeBonus += range_bonus_per_level;
             RefreshBuffs();
+            return true;
         }
 
         public override void OnTowerEnteredRange(TowerRuntimeBase other)
