@@ -23,6 +23,8 @@ namespace TowersSystem.BuildSystem
 
       var runtime = AddTowerComponent(go, config.Type);
       runtime.Initialize(config, cell);
+      
+      SetupRangeDetection(runtime);
 
       return runtime;
     }

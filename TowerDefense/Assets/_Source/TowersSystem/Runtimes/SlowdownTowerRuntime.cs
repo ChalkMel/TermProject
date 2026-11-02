@@ -7,7 +7,7 @@ namespace TowersSystem.Runtimes
     public class SlowdownTowerRuntime : TowerRuntimeBase
     {
         [SerializeField] private int slowBonusPerLevel = 10;
-        [SerializeField] private int maxSlowPercent = 90;
+        [SerializeField] private int maxSlowPercent = 70;
 
         private readonly List<EnemyRuntime> _slowedEnemies = new();
         private int _levelBuffBonus;

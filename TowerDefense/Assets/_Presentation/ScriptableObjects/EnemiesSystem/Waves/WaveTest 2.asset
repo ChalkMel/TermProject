@@ -15,8 +15,14 @@ MonoBehaviour:
   groups:
   - <Enemy>k__BackingField: {fileID: 11400000, guid: 7abb507ff7253b64b8964a04e8ec0998, type: 2}
     <Count>k__BackingField: 3
-    <Interval>k__BackingField: 0.8
+    <Interval>k__BackingField: 10
   - <Enemy>k__BackingField: {fileID: 11400000, guid: 12494e8e4ce739042811614cbf7fdd6b, type: 2}
     <Count>k__BackingField: 5
-    <Interval>k__BackingField: 0.2
+    <Interval>k__BackingField: 4
+  - <Enemy>k__BackingField: {fileID: 11400000, guid: 32984697c5f8fca448204e0600c22dc0, type: 2}
+    <Count>k__BackingField: 1
+    <Interval>k__BackingField: 2
+  - <Enemy>k__BackingField: {fileID: 11400000, guid: 440e4200249f0e7439f3629258be70a4, type: 2}
+    <Count>k__BackingField: 1
+    <Interval>k__BackingField: 2.2
   delayBeforeWave: 4

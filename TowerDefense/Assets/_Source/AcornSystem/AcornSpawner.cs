@@ -11,8 +11,7 @@ namespace AcornSystem
         [Header("Refs")]
         [SerializeField] private Tilemap spawnTilemap;
         [SerializeField] private Acorn acornPrefab;
-        [SerializeField] private Credits credits;
-
+        private Credits _credits;
         [Header("Settings")]
         [SerializeField] private float spawnInterval = 8f;
         [SerializeField] private int reward = 25;
@@ -21,17 +20,13 @@ namespace AcornSystem
         private readonly List<Vector3Int> _spawnCells = new();
         private readonly List<Acorn> _activeAcorns = new();
 
-        public int Reward => reward;
-        public int ActiveCount => _activeAcorns.Count;
-        public int MaxAcorns => maxAcorns;
-
-        private void Start()
+        public void Init( Credits  credits)
         {
+            _credits = credits;
             CacheSpawnCells();
 
             if (_spawnCells.Count == 0)
             {
-                Debug.LogWarning("[AcornSpawner] Нет тайлов для спавна.");
                 return;
             }
 
@@ -53,11 +48,9 @@ namespace AcornSystem
             while (true)
             {
                 yield return new WaitForSeconds(spawnInterval);
-
-                // Чистим мёртвые ссылки (на всякий случай)
+                
                 _activeAcorns.RemoveAll(a => a == null);
-
-                // Спавним только если есть свободный слот
+                
                 if (_activeAcorns.Count < maxAcorns)
                     SpawnAcorn();
             }
@@ -66,13 +59,12 @@ namespace AcornSystem
         private void SpawnAcorn()
         {
             if (_spawnCells.Count == 0 || acornPrefab == null) return;
-
-            // Ищем клетку, где ещё нет жёлудя (по желанию — можно убрать)
+            
             Vector3Int cell = PickFreeCell();
             Vector3 worldPos = spawnTilemap.GetCellCenterWorld(cell);
 
             var acorn = Instantiate(acornPrefab, worldPos, Quaternion.identity);
-            acorn.Initialize(this, credits, reward);
+            acorn.Initialize(this, _credits, reward);
             acorn.OnPickedUp += HandleAcornPickedUp;
 
             _activeAcorns.Add(acorn);
@@ -80,7 +72,6 @@ namespace AcornSystem
 
         private Vector3Int PickFreeCell()
         {
-            // Пытаемся не ставить два жёлудя в одну клетку
             const int maxTries = 16;
             for (int i = 0; i < maxTries; i++)
             {
@@ -99,8 +90,7 @@ namespace AcornSystem
 
                 if (!occupied) return candidate;
             }
-
-            // Если не нашли — возвращаем любую (лучше, чем ничего)
+            
             return _spawnCells[Random.Range(0, _spawnCells.Count)];
         }
 

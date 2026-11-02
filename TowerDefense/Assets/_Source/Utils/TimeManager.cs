@@ -11,10 +11,11 @@ namespace Utils
     [SerializeField] private Button downButton;
     [SerializeField] private TextMeshProUGUI timeText;
     [SerializeField] private Button addButton;
-    [SerializeField] private Credits credits;
 
-    private void Awake()
+    private Credits _credits;
+    public void Init( Credits credits)
     {
+      _credits = credits;
       upButton.onClick.AddListener(() => AddTime());
       downButton.onClick.AddListener(() => RemoveTime());
       addButton.onClick.AddListener(() => AddMoney());
@@ -45,7 +46,7 @@ namespace Utils
     
     private void AddMoney()
     {
-      credits.AddMoney(5);
+      _credits.AddMoney(5);
     }
   }
 }

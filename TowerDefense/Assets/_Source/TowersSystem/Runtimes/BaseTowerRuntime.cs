@@ -8,6 +8,7 @@ namespace TowersSystem.Runtimes
   public abstract class TowerRuntimeBase : MonoBehaviour
   {
     protected TowerConfig Tower;
+    public System.Action<float> OnRangeChanged;
 
     public TowerConfig Config => Tower;
     public Vector3Int CellPosition { get; private set; }
@@ -42,6 +43,7 @@ namespace TowersSystem.Runtimes
     {
       Level++;
       _levelRangeBonus += .5f;
+      OnRangeChanged?.Invoke(Range);
     }
 
     public virtual void OnEnemyEnteredRange(EnemyRuntime enemy) { }

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2239f8ebb6bb604da0ec8e9cf7954bb, type: 3}
   m_Name: BufferSpeedEnemy
   m_EditorClassIdentifier: 
-  <Speed>k__BackingField: 1.2
+  <Speed>k__BackingField: 1
   <MaxHealth>k__BackingField: 20
   <Damage>k__BackingField: 10
   <Reward>k__BackingField: 10

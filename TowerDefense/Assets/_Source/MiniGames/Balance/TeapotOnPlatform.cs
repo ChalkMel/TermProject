@@ -16,10 +16,10 @@ namespace MiniGames.Balance
         [SerializeField] private float springStrength = 12f;
         [SerializeField] private float damping = 6f;
 
-        [Header("Visual — Base")]
+        [Header("Visual")]
         [SerializeField] private float tiltDegreesPerUnit = 20f;
 
-        [Header("Visual — Color Warning")]
+        [Header("Color Warning")]
         [Tooltip("SpriteRenderer чайника. Если пусто — ищется на этом или дочерних объектах.")]
         [SerializeField] private SpriteRenderer teapotRenderer;
         

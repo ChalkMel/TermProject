@@ -565,6 +565,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d30f4e391c494e51898c108878a4dc21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  radius: 0.6
 --- !u!212 &855268475
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -742,10 +743,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89a7737bb872446a981c516010d92f57, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 706872959}
-  offset: {x: 0, y: 1, z: -10}
-  smooth: 4
-  snapOnStart: 1
 --- !u!114 &1026479726
 MonoBehaviour:
   m_ObjectHideFlags: 0

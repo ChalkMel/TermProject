@@ -8,8 +8,14 @@ namespace TowersSystem
   public class TowerRangeDetector : MonoBehaviour
   {
     private TowerRuntimeBase _tower;
+    private CircleCollider2D _collider;
 
-    public void Initialize(TowerRuntimeBase tower) => _tower = tower;
+    public void Initialize(TowerRuntimeBase tower)
+    {
+      _tower = tower;
+      _collider = GetComponent<CircleCollider2D>();
+      tower.OnRangeChanged += r => _collider.radius = r;
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {

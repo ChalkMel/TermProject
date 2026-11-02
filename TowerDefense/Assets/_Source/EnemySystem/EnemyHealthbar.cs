@@ -9,8 +9,10 @@ namespace EnemySystem
         [SerializeField] private bool hideWhenFull = true;
         [SerializeField] private bool hideWhenEmpty;
         [SerializeField] private GameObject healthBar;
-        private float _maxFillWidth;
-        private Vector3 _fillInitialLocalPos;
+
+        private float _spriteLocalWidth;         // ширина спрайта в локальных единицах (pivot assumed center)
+        private Vector3 _fillInitialLocalScale;  // стартовый масштаб fill
+        private Vector3 _fillInitialLocalPos;    // стартовая позиция fill
         private Transform _fillParent;
         private float _currentNormalized = 1f;
 
@@ -18,12 +20,15 @@ namespace EnemySystem
         {
             if (fill == null || fillRenderer == null) return;
 
-            _fillParent = fill.parent;
-            _fillInitialLocalPos = fill.localPosition;
-            _maxFillWidth = fillRenderer.bounds.size.x > 0
-                ? fillRenderer.bounds.size.x
-                : fill.localScale.x;
+            _fillParent           = fill.parent;
+            _fillInitialLocalPos  = fill.localPosition;
+            _fillInitialLocalScale = fill.localScale;
+            
+            _spriteLocalWidth = fillRenderer.sprite != null
+                ? fillRenderer.sprite.bounds.size.x
+                : 1f;
         }
+
         public void SetValue(float normalized)
         {
             if (fill == null) return;
@@ -32,18 +37,18 @@ namespace EnemySystem
             if (Mathf.Approximately(normalized, _currentNormalized)) return;
             _currentNormalized = normalized;
             
-            Vector3 scale = fill.localScale;
-            scale.x = _maxFillWidth * normalized;
+            Vector3 scale = _fillInitialLocalScale;
+            scale.x = _fillInitialLocalScale.x * normalized;
             fill.localScale = scale;
-            
+            float fullWidth = _spriteLocalWidth * _fillInitialLocalScale.x;
             Vector3 pos = _fillInitialLocalPos;
-            pos.x = _fillInitialLocalPos.x - (_maxFillWidth * (1f - normalized)) * 0.5f;
+            pos.x = _fillInitialLocalPos.x - fullWidth * (1f - normalized) * 0.5f;
             fill.localPosition = pos;
-            
+
             if (fillRenderer != null)
             {
                 bool visible = true;
-                if (hideWhenFull && normalized >= 0.999f) visible = false;
+                if (hideWhenFull  && normalized >= 0.999f) visible = false;
                 if (hideWhenEmpty && normalized <= 0.001f) visible = false;
                 fillRenderer.enabled = visible;
             }
@@ -51,7 +56,7 @@ namespace EnemySystem
 
         public void Hide()
         {
-            healthBar.SetActive(false);
+            if (healthBar != null) healthBar.SetActive(false);
         }
     }
 }

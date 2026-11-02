@@ -1,9 +1,11 @@
+using AcornSystem;
 using EnemySystem;
 using Resources;
 using TowersSystem;
 using TowersSystem.BuildSystem;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Utils;
 
 namespace Core
 {
@@ -13,6 +15,8 @@ namespace Core
     [SerializeField] private TowerTooltip tooltip;
     [SerializeField] private CreditsView creditsView;
     [SerializeField] private EnemySpawner enemySpawner;
+    [SerializeField] private TimeManager timeManager;
+    [SerializeField] private AcornSpawner acornSpawner;
     private Credits _credits;
     [SerializeField] private Tilemap towerTilemap;
 
@@ -27,6 +31,8 @@ namespace Core
       SetupCredits();
       SetupEnemySystem();
       SetupTowerSystem();
+      timeManager.Init(_credits);
+      acornSpawner.Init(_credits);
     }
 
     private void SetupCredits()

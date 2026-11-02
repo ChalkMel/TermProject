@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2239f8ebb6bb604da0ec8e9cf7954bb, type: 3}
   m_Name: DebufferDamag
   m_EditorClassIdentifier: 
-  <Speed>k__BackingField: 1.2
-  <MaxHealth>k__BackingField: 20
+  <Speed>k__BackingField: 0.6
+  <MaxHealth>k__BackingField: 10
   <Damage>k__BackingField: 10
   <Reward>k__BackingField: 10
   <Prefab>k__BackingField: {fileID: 6247233371714193356, guid: ab087d947838a3d4fb27a596bb5c65a4, type: 3}
