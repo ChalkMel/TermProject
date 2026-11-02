@@ -83,7 +83,6 @@ namespace TowersSystem.BuildSystem
                 if (!valid) return;
 
                 PlaceTower(_selectedConfig, cell);
-                // Выбор сохраняется — можно ставить несколько башен подряд.
             }
         }
 
@@ -136,7 +135,7 @@ namespace TowersSystem.BuildSystem
 
             _selectedConfig = null;
             _preview.Hide();
-            menu.ClearSelection(); // снимет подсветку кнопки; повторно TowerChosen(null) не зацикливается
+            menu.ClearSelection();
         }
 
         private Vector3Int GetCellUnderMouse()

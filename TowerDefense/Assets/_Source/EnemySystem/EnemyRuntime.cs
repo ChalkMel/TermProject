@@ -69,6 +69,7 @@ namespace EnemySystem
         {
             if (_isDying) return;
             if (!IsAlive) return;
+            if (Status != null && Status.IsStunned) return;
             Move();
         }
 

@@ -6,21 +6,23 @@ namespace TowersSystem.Runtimes
 {
     public class SlowdownTowerRuntime : TowerRuntimeBase
     {
-        [SerializeField] private int slowBonusPerLevel = 10;
-        [SerializeField] private int maxSlowPercent = 70;
+        private const int slow_bonus_per_level = 5;
+        private const float range_bonus_per_level = .2f;
+        private const int max_slow_percent = 70;
 
         private readonly List<EnemyRuntime> _slowedEnemies = new();
         private int _levelBuffBonus;
 
         public float EffectiveSlowPercent =>
-            Mathf.Min(Config.Buff + _levelBuffBonus, maxSlowPercent);
+            Mathf.Min(Config.Buff + _levelBuffBonus, max_slow_percent);
 
         protected override Color GizmoColor => new Color(0.4f, 0.7f, 1f);
 
         public override void UpgradeTower()
         {
             base.UpgradeTower();
-            _levelBuffBonus += slowBonusPerLevel;
+            _levelBuffBonus += slow_bonus_per_level;
+            _levelRangeBonus += range_bonus_per_level;
             RefreshSlows();
         }
 

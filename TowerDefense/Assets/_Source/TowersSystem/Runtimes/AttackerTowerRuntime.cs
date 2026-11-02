@@ -9,7 +9,8 @@ namespace TowersSystem.Runtimes
         private float _currentCooldown;
         private readonly List<EnemyRuntime> _enemiesInRange = new();
         private EnemyRuntime _currentTarget;
-        private int _levelDamageBonus;
+        private float _levelDamageBonus;
+        
 
         public float Damage =>
             (Tower.Damage + _levelDamageBonus) * Status.DamageMultiplier;
@@ -21,7 +22,8 @@ namespace TowersSystem.Runtimes
         public override void UpgradeTower()
         {
             base.UpgradeTower();
-            _levelDamageBonus += 1;
+            _levelDamageBonus = Config.Cost * 1.3f * Level;
+            
         }
 
         private void Update()
@@ -81,13 +83,15 @@ namespace TowersSystem.Runtimes
                    <= Range * Range;
         }
 
-        private void Shoot()
+        protected virtual float StunOnHit => 0f;
+
+        protected virtual void Shoot()
         {
             if (_currentTarget == null) return;
             var go = Instantiate(Config.ProjectilePrefab, transform.position, Quaternion.identity);
             var proj = go.GetComponent<Projectile>();
             if (proj != null)
-                proj.Initialize(_currentTarget, Damage, Config.ProjectileSpeed, this);
+                proj.Initialize(_currentTarget, Damage, Config.ProjectileSpeed, this, StunOnHit);
 
             _currentCooldown = Config.Cooldown;
         }

@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 0edf5743ba93a93429048be63ac61867
+guid: 9262359731bfd564a83d208a515c4f50
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1234889900180391423
-    second: tort_gnom 1_0
+      213: -3454738343640677128
+    second: tort_gnom 1 (1)_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -37,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 0
+    filterMode: 1
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -113,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: tort_gnom 1_0
+      name: tort_gnom 1 (1)_0
       rect:
         serializedVersion: 2
-        x: 16
+        x: 5
         y: 0
-        width: 461
-        height: 477
+        width: 183
+        height: 188
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: ff548fc42d5332110800000000000000
-      internalID: 1234889900180391423
+      spriteID: 8f4406bc7cd4e00d0800000000000000
+      internalID: -3454738343640677128
       vertices: []
       indices: 
       edges: []
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      tort_gnom 1_0: 1234889900180391423
+      tort_gnom 1 (1)_0: -3454738343640677128
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

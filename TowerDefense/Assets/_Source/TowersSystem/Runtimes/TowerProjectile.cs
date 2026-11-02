@@ -14,14 +14,17 @@ namespace TowersSystem.Runtimes
     private float _speed;
     private float _lifeTimer;
     private AttackerTowerRuntime _tower;
+    private float _stunDuration;
 
-    public void Initialize(EnemyRuntime target, float damage, float speed, AttackerTowerRuntime attacker)
+    public void Initialize(EnemyRuntime target, float damage, float speed,
+      AttackerTowerRuntime attacker, float stunDuration = 0f)
     {
-      _target = target;
-      _damage = damage;
-      _speed = speed;
-      _lifeTimer = maxLifetime;
-      _tower = attacker;
+      _target       = target;
+      _damage       = damage;
+      _speed        = speed;
+      _lifeTimer    = maxLifetime;
+      _tower        = attacker;
+      _stunDuration = stunDuration;
     }
 
     private void Update()
@@ -52,6 +55,8 @@ namespace TowersSystem.Runtimes
       if (Vector2.Distance(transform.position, goal) <= hitDistance)
       {
         _target.TakeDamage(_damage);
+        if (_stunDuration > 0f) 
+          _target.Status.AddStun(_stunDuration);
         Destroy(gameObject);
       }
     }

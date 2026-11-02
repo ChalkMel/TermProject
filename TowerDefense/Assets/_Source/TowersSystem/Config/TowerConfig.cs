@@ -8,6 +8,7 @@ namespace TowersSystem.Config
     Attacker = 0,
     Buffer   = 1,
     Slowdown = 2,
+    Stun     = 3,
   }
 
   [CreateAssetMenu(fileName = "NewTowerConfig", menuName = "Towers/Tower Config")]
@@ -23,6 +24,9 @@ namespace TowersSystem.Config
 
     [Header("Buffer / Slowdown")]
     [field: SerializeField] public float Buff { get; private set; }
+    
+    [Header("Stun")]
+    [field: SerializeField] public float StunDuration { get; private set; } = 0.5f;
 
     [Header("Common")]
     [field: SerializeField] public int Cost { get; private set; }

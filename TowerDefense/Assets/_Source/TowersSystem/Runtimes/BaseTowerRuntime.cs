@@ -17,6 +17,8 @@ namespace TowersSystem.Runtimes
     public TowerStatusController Status { get; private set; }
 
     protected float _levelRangeBonus;
+    private const float level_range_bonus = .4f;
+    public bool CanBeBought;
 
     public virtual float Range => Tower.Range + _levelRangeBonus;
 
@@ -36,13 +38,13 @@ namespace TowersSystem.Runtimes
 
     protected virtual void OnInitialized() { }
 
-    public virtual int GetUpgradeCost() => Config.Cost * Level / 4;
+    public virtual int GetUpgradeCost() => Mathf.Max(Config.Cost / 2 * Level);
     public virtual int GetSellPrice() => Mathf.Max(1, Config.Cost * Level / 4);
 
     public virtual void UpgradeTower()
     {
       Level++;
-      _levelRangeBonus += .5f;
+      _levelRangeBonus += level_range_bonus;
       OnRangeChanged?.Invoke(Range);
     }
 

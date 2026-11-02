@@ -35,6 +35,7 @@ namespace TowersSystem.BuildSystem
         TowerType.Attacker => go.AddComponent<AttackerTowerRuntime>(),
         TowerType.Buffer   => go.AddComponent<BufferTowerRuntime>(),
         TowerType.Slowdown => go.AddComponent<SlowdownTowerRuntime>(),
+        TowerType.Stun     => go.AddComponent<StunTowerRuntime>(),
         _                  => go.AddComponent<AttackerTowerRuntime>()
       };
 

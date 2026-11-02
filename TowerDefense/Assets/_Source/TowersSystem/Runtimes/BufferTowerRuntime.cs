@@ -7,7 +7,8 @@ namespace TowersSystem.Runtimes
     public class BufferTowerRuntime : TowerRuntimeBase
     {
         [Header("Upgrade Bonus")]
-        [SerializeField] private int buffBonusPerLevel = 5;
+        private const int buff_bonus_per_level = 5;
+        private const float range_bonus_per_level = 0.2f;
 
         private readonly List<AttackerTowerRuntime> _buffedAttackers = new();
         private int _levelBuffBonus;
@@ -19,7 +20,8 @@ namespace TowersSystem.Runtimes
         public override void UpgradeTower()
         {
             base.UpgradeTower();
-            _levelBuffBonus += buffBonusPerLevel;
+            _levelBuffBonus += buff_bonus_per_level;
+            _levelRangeBonus += range_bonus_per_level;
             RefreshBuffs();
         }
 

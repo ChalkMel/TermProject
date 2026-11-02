@@ -56,42 +56,46 @@ namespace TowersSystem.Menu
             if (panel != null) panel.SetActive(false);
         }
 
-        private void PositionAbove(RectTransform anchor)
-        {
+        private void PositionAbove(RectTransform anchor) 
+        { 
             if (_panelRect == null || _canvasRect == null || anchor == null) return;
             
-            Vector3[] corners = new Vector3[4];
-            anchor.GetWorldCorners(corners);
-            Vector3 topCenterWorld = (corners[1] + corners[2]) * 0.5f;
+            Vector3[] corners = new Vector3[4]; 
+            anchor.GetWorldCorners(corners); 
+            Vector3 topCenterWorld = (corners[1] + corners[2]) * 0.5f; 
             Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(_uiCamera, topCenterWorld);
             
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                _canvasRect, screenPoint, _uiCamera, out Vector2 localPoint);
-
+        _canvasRect, screenPoint, _uiCamera, out Vector2 localPoint);
             
-            Vector2 panelSize = _panelRect.rect.size;
-            Vector2 anchoredPos = localPoint
-                                  + offsetFromButton
-                                  + new Vector2(-panelSize.x * 0.5f, panelSize.y);
-            _panelRect.anchoredPosition = anchoredPos;
-
-            //ClampToCanvas();
-        }
-
-        private void ClampToCanvas()
-        {
-            Vector2 canvasSize = _canvasRect.rect.size;
-            Vector2 halfCanvas = canvasSize * 0.5f;
-            Vector2 panelSize  = _panelRect.rect.size;
-
-            Vector2 min = -halfCanvas + panelSize * 0.5f;
-            Vector2 max =  halfCanvas - panelSize * 0.5f;
-
-            Vector2 pos = _panelRect.anchoredPosition;
-            pos.x = Mathf.Clamp(pos.x, min.x, max.x);
-            pos.y = Mathf.Clamp(pos.y, min.y, max.y);
-            _panelRect.anchoredPosition = pos;
-        }
+            LayoutRebuilder.ForceRebuildLayoutImmediate(_panelRect);
+            Vector2 panelSize = _panelRect.rect.size; 
+            Vector2 pivot     = _panelRect.pivot; 
+            Vector2 anchorPt  = new Vector2(0.5f, 0.5f);
+            
+            Vector2 desired = localPoint
+                              + offsetFromButton
+                              + new Vector2(-panelSize.x * pivot.x,
+                                  panelSize.y * (1f - pivot.y));
+            
+            Vector2 canvasSize = _canvasRect.rect.size; 
+            Vector2 canvasPivot = _canvasRect.pivot; 
+            float minX = -canvasSize.x * canvasPivot.x; 
+            float maxX =  canvasSize.x * (1f - canvasPivot.x); 
+            float minY = -canvasSize.y * canvasPivot.y; 
+            float maxY =  canvasSize.y * (1f - canvasPivot.y);
+            
+            float halfW = panelSize.x; 
+            float halfH = panelSize.y; 
+            float px = Mathf.Clamp(desired.x,
+                           minX + halfW * pivot.x,
+                           maxX - halfW * (1f - pivot.x)); 
+            float py = Mathf.Clamp(desired.y,
+                           minY + halfH * pivot.y,
+                           maxY - halfH * (1f - pivot.y));
+            
+            _panelRect.anchoredPosition = new Vector2(px, py);
+}
 
         private static string BuildText(TowerConfig c)
         {
@@ -110,6 +114,11 @@ namespace TowersSystem.Menu
                     return "Type: Slowdown\n" 
                            + $"Slow: -{c.Buff}%\n";
 
+                case TowerType.Stun:
+                    return "Type: Stun\n"
+                           + $"Damage: {c.Damage}\n"
+                           + $"Stun: {c.StunDuration}s\n"
+                           + $"Cooldown: {c.Cooldown}s\n";
                 default:
                     return "Error";
             }

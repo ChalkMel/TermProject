@@ -1,5 +1,6 @@
 using Resources;
 using TowersSystem.Runtimes;
+using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
 
 namespace TowersSystem.BuildSystem
@@ -28,14 +29,11 @@ namespace TowersSystem.BuildSystem
       _tooltip.OnHidden -= HandleTooltipHidden;
     }
 
-    public void Show(TowerRuntimeBase tower, Vector3 screenPos)
+    public void Show(TowerRuntimeBase tower, Vector3 screenPosOfTower)
     {
-      _tooltip.Show(tower);
-      _tooltip.transform.position = screenPos;
+      _tooltip.Show(tower, screenPosOfTower);
       _range.Show(tower.transform.position, tower.Range);
     }
-
-    public void Hide() => _tooltip.Hide();
 
     public bool TryUpgrade(TowerRuntimeBase tower)
     {
@@ -43,10 +41,13 @@ namespace TowersSystem.BuildSystem
       if (!_credits.TrySpendMoney(tower.GetUpgradeCost())) return false;
 
       tower.UpgradeTower();
-      _tooltip.Show(tower);
+      var screen = Camera.main.WorldToScreenPoint(tower.transform.position);
+      _tooltip.Show(tower, screen);
       _range.Show(tower.transform.position, tower.Range);
       return true;
     }
+
+    public void Hide() => _tooltip.Hide();
 
     public void Sell(TowerRuntimeBase tower)
     {
