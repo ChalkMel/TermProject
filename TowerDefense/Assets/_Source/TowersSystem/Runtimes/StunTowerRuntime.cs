@@ -27,10 +27,18 @@ namespace TowersSystem.Runtimes
 
       return $"<b>{Config.Name}</b> (Lv. {Level})\n" +
              $"Type: Stun\n" +
-             $"Damage: {Damage}\n" +
              $"Stun: {StunOnHit:F2}s\n" +
              $"Range: {Range:F1}\n" +
              $"Cooldown: {Config.Cooldown * Status.AttackSpeedMultiplier}s{buffLine}";
+    }
+    
+    public override string GetUpgradePreviewText()
+    {
+      float nextStun  = StunOnHit + stunBonusPerLevel;
+      float nextRange = Range + level_range_bonus;
+
+      return $"Stun: {StunOnHit:F2}s → {nextStun:F2}s\n" +
+             $"Range: {Range:F1} → {nextRange:F1}";
     }
   }
 }

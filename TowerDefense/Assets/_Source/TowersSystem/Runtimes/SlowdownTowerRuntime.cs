@@ -65,5 +65,14 @@ namespace TowersSystem.Runtimes
                    $"Slow: -{EffectiveSlowPercent}%\n" +
                    $"Range: {Range:F1}";
         }
+        
+        public override string GetUpgradePreviewText()
+        {
+            float nextSlow  = Mathf.Min(Config.Buff + _levelBuffBonus + slow_bonus_per_level, max_slow_percent);
+            float nextRange = Range + level_range_bonus + range_bonus_per_level;
+
+            return $"Slow: -{EffectiveSlowPercent}% → -{nextSlow}%\n" +
+                   $"Range: {Range:F1} → {nextRange:F1}";
+        }
     }
 }

@@ -12,6 +12,7 @@ namespace TowersSystem
     [SerializeField] private TextMeshProUGUI infoText;
     [SerializeField] private TextMeshProUGUI upgradeCostText;
     [SerializeField] private TextMeshProUGUI sellPriceText;
+    [SerializeField] private TextMeshProUGUI upgradePreviewText;
     [SerializeField] private Button upgradeButton;
     [SerializeField] private Button sellButton;
 
@@ -57,6 +58,8 @@ namespace TowersSystem
       upgradeCostText.text = $"Upgrade: {tower.GetUpgradeCost()}";
       sellPriceText.text   = $"Sell: {tower.GetSellPrice()}";
       
+      DrawUpgradePreview(tower);
+      
       LayoutRebuilder.ForceRebuildLayoutImmediate(_rect);
 
       PositionNearScreenPoint(screenPosOfTower);
@@ -98,6 +101,19 @@ namespace TowersSystem
                              maxY - panelSize.y * (1f - panelPivot.y));
       
       _rect.anchoredPosition = new Vector2(px, py);
+    }
+    
+    private void DrawUpgradePreview(TowerRuntimeBase tower)
+    {
+      if (upgradePreviewText == null) return;
+
+      string preview = tower.GetUpgradePreviewText();
+      bool hasPreview = !string.IsNullOrEmpty(preview);
+
+      upgradePreviewText.gameObject.SetActive(hasPreview);
+      if (!hasPreview) return;
+
+      upgradePreviewText.text = "<i>Next level:</i>\n" + preview;
     }
 
     private void OnUpgradeClicked()

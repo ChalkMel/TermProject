@@ -20,7 +20,7 @@ MonoBehaviour:
   <Buff>k__BackingField: 0
   <StunDuration>k__BackingField: 2
   <Cost>k__BackingField: 60
-  <Range>k__BackingField: 2
+  <Range>k__BackingField: 3
   <Tile>k__BackingField: {fileID: 11400000, guid: 3d994fa048564934ebd979dcc89e01cf, type: 2}
   <Prefab>k__BackingField: {fileID: 1382389597540801863, guid: 975d9e2ac30ff4d4c8143446aa5a62c4, type: 3}
   <ProjectileSpeed>k__BackingField: 7

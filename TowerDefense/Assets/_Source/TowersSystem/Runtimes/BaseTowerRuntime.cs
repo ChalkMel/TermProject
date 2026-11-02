@@ -17,7 +17,7 @@ namespace TowersSystem.Runtimes
     public TowerStatusController Status { get; private set; }
 
     protected float _levelRangeBonus;
-    private const float level_range_bonus = .4f;
+    protected const float level_range_bonus = .2f;
     public bool CanBeBought;
 
     public virtual float Range => Tower.Range + _levelRangeBonus;
@@ -57,6 +57,7 @@ namespace TowersSystem.Runtimes
 
     public virtual string GetTooltipText() =>
       $"<b>{Config.Name}</b> (Lv. {Level})\nRange: {Range:F1}";
+    public virtual string GetUpgradePreviewText() => null;
 
     protected abstract Color GizmoColor { get; }
 

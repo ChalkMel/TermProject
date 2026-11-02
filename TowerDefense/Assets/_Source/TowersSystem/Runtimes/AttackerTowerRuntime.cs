@@ -22,8 +22,8 @@ namespace TowersSystem.Runtimes
         public override void UpgradeTower()
         {
             base.UpgradeTower();
-            _levelDamageBonus = Config.Cost * 1.3f * Level;
-            
+            _levelDamageBonus += Config.Damage * 0.3f;
+
         }
 
         private void Update()
@@ -112,6 +112,15 @@ namespace TowersSystem.Runtimes
                    $"Damage: {Damage}\n" +
                    $"Range: {Range:F1}\n" +
                    $"Cooldown: {Config.Cooldown * Status.AttackSpeedMultiplier}s{buffLine}";
+        }
+        public override string GetUpgradePreviewText()
+        {
+            float nextBonus  = _levelDamageBonus + Config.Damage * 0.3f;
+            float nextDamage = (Config.Damage + nextBonus) * Status.DamageMultiplier;
+            float nextRange  = Range + level_range_bonus;
+
+            return $"Damage: {Damage:F1} → {nextDamage:F1}\n" +
+                   $"Range: {Range:F1} → {nextRange:F1}";
         }
     }
 }
