@@ -17,6 +17,7 @@ namespace TowersSystem.Runtimes
     public TowerStatusController Status { get; private set; }
 
     protected int maxLevel = 5;
+    protected const string color = "#c0f0d3";
     public bool IsMaxLevel => Level >= maxLevel;
     
     protected float _levelRangeBonus;

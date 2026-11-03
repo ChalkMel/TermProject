@@ -37,66 +37,49 @@ namespace TowersSystem.Menu
             Hide();
         }
         
-        public void Show(TowerConfig config, RectTransform anchor)
-        {
-            if (panel == null || config == null || anchor == null) return;
-
-            panel.SetActive(true);
-
-            nameText.text    = config.Name;
-            description.text = BuildText(config);
-            cost.text        = $"Cost: {config.Cost}";
-            icon.sprite      = config.Tile != null ? config.Tile.sprite : null;
-
-            PositionAbove(anchor);
-        }
+      public void Show(TowerConfig config, RectTransform anchor) 
+      { 
+          if (panel == null || config == null || anchor == null) return;
+          
+          if (_panelRect == null) _panelRect = panel.GetComponent<RectTransform>(); 
+          if (_panelRect == null) { Debug.LogError("[Tooltip] Panel has no RectTransform"); return; }
+          
+          panel.SetActive(true);
+          
+          nameText.text    = config.Name; 
+          description.text = BuildText(config); 
+          cost.text        = $"Cost: {config.Cost}"; 
+          icon.sprite      = config.Tile != null ? config.Tile.sprite : null;
+          PositionAbove(anchor); 
+      }
+      private void PositionAbove(RectTransform anchor) 
+      { 
+          if (_panelRect == null || _canvasRect == null || anchor == null) return;
+          
+          LayoutRebuilder.ForceRebuildLayoutImmediate(_panelRect);
+          
+          _panelRect.anchorMin = new Vector2(0.5f, 0.5f); 
+          _panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+          
+          var corners = new Vector3[4]; 
+          anchor.GetWorldCorners(corners); 
+          Vector3 topCenterWorld = (corners[1] + corners[2]) * 0.5f; 
+          Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(_uiCamera, topCenterWorld); 
+          RectTransformUtility.ScreenPointToLocalPointInRectangle(
+        _canvasRect, screenPoint, _uiCamera, out Vector2 localPoint); 
+          Vector2 panelSize = _panelRect.rect.size; 
+          Vector2 pivot     = _panelRect.pivot;
+          
+          float posX = localPoint.x + offsetFromButton.x + (pivot.x - 0.5f) * panelSize.x; 
+          float posY = localPoint.y + offsetFromButton.y + pivot.y * panelSize.y;
+          
+          _panelRect.anchoredPosition = new Vector2(posX, posY); 
+      }
 
         public void Hide()
         {
             if (panel != null) panel.SetActive(false);
         }
-
-        private void PositionAbove(RectTransform anchor) 
-        { 
-            if (_panelRect == null || _canvasRect == null || anchor == null) return;
-            
-            Vector3[] corners = new Vector3[4]; 
-            anchor.GetWorldCorners(corners); 
-            Vector3 topCenterWorld = (corners[1] + corners[2]) * 0.5f; 
-            Vector2 screenPoint = RectTransformUtility.WorldToScreenPoint(_uiCamera, topCenterWorld);
-            
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-        _canvasRect, screenPoint, _uiCamera, out Vector2 localPoint);
-            
-            LayoutRebuilder.ForceRebuildLayoutImmediate(_panelRect);
-            Vector2 panelSize = _panelRect.rect.size; 
-            Vector2 pivot     = _panelRect.pivot; 
-            Vector2 anchorPt  = new Vector2(0.5f, 0.5f);
-            
-            Vector2 desired = localPoint
-                              + offsetFromButton
-                              + new Vector2(-panelSize.x * pivot.x,
-                                  panelSize.y * (1f - pivot.y));
-            
-            Vector2 canvasSize = _canvasRect.rect.size; 
-            Vector2 canvasPivot = _canvasRect.pivot; 
-            float minX = -canvasSize.x * canvasPivot.x; 
-            float maxX =  canvasSize.x * (1f - canvasPivot.x); 
-            float minY = -canvasSize.y * canvasPivot.y; 
-            float maxY =  canvasSize.y * (1f - canvasPivot.y);
-            
-            float halfW = panelSize.x; 
-            float halfH = panelSize.y; 
-            float px = Mathf.Clamp(desired.x,
-                           minX + halfW * pivot.x,
-                           maxX - halfW * (1f - pivot.x)); 
-            float py = Mathf.Clamp(desired.y,
-                           minY + halfH * pivot.y,
-                           maxY - halfH * (1f - pivot.y));
-            
-            _panelRect.anchoredPosition = new Vector2(px, py);
-}
-
         private static string BuildText(TowerConfig c)
         {
             switch (c.Type) // отдельный мметод подумать

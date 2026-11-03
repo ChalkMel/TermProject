@@ -120,8 +120,8 @@ namespace TowersSystem.Runtimes
             float nextDamage = (Config.Damage + nextBonus) * Status.DamageMultiplier;
             float nextRange  = Range + level_range_bonus;
 
-            return $"Damage: {Damage:F1} → {nextDamage:F1}\n" +
-                   $"Range: {Range:F1} → {nextRange:F1}";
+            return $"Damage:\n {Damage:F1} → <color={color}>{nextDamage:F1}\n</color={color}>" +
+                   $"Range:\n {Range:F1} → <color={color}>{nextRange:F1}</color={color}>";
         }
     }
 }

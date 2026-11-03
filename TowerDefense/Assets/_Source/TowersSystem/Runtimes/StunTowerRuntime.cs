@@ -6,7 +6,6 @@ namespace TowersSystem.Runtimes
   {
     [SerializeField] private float stunBonusPerLevel = 0.15f;
     private int maxLevel = 3;
-
     private float _levelStunBonus;
 
     protected override float StunOnHit => Config.StunDuration + _levelStunBonus;
@@ -39,8 +38,8 @@ namespace TowersSystem.Runtimes
       float nextStun  = StunOnHit + stunBonusPerLevel;
       float nextRange = Range + level_range_bonus;
 
-      return $"Stun: {StunOnHit:F2}s → {nextStun:F2}s\n" +
-             $"Range: {Range:F1} → {nextRange:F1}";
+      return $"Stun:\n {StunOnHit:F2}s → <color={color}>{nextStun:F2}s</color={color}>\n" +
+             $"Range:\n {Range:F1} → <color={color}>{nextRange:F1}</color={color}>";
     }
   }
 }

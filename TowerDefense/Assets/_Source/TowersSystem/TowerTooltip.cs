@@ -49,32 +49,72 @@ namespace TowersSystem
 
     public void SetBuilder(TowerPlacementController builder) => _builder = builder;
 
-    public void Show(TowerRuntimeBase tower, Vector2 screenPosOfTower)
+    private Vector2 _lastScreenPos;
+private bool _hasLastScreenPos;
+
+public void Show(TowerRuntimeBase tower, Vector2 screenPosOfTower)
+{
+    _currentTower = tower;
+    gameObject.SetActive(true);
+
+    infoText.text        = tower.GetTooltipText();
+    upgradeCostText.text = tower.IsMaxLevel ? "MAX" : $"Upgrade: {tower.GetUpgradeCost()}";
+    sellPriceText.text   = $"Sell: {tower.GetSellPrice()}";
+
+    upgradeButton.interactable = !tower.IsMaxLevel;
+
+    HideUpgradePreview();
+    _lastScreenPos = screenPosOfTower;
+    _hasLastScreenPos = true;
+
+    LayoutRebuilder.ForceRebuildLayoutImmediate(_rect);
+    PositionNearScreenPoint(screenPosOfTower);
+}
+
+public void ShowUpgradePreview()
+{
+    if (_currentTower == null) return;
+    if (_currentTower.IsMaxLevel) return;
+    if (upgradePreviewText == null) return;
+
+    string preview = _currentTower.GetUpgradePreviewText();
+    if (string.IsNullOrEmpty(preview))
     {
-      _currentTower = tower;
-      gameObject.SetActive(true);
-
-      infoText.text        = tower.GetTooltipText();
-      upgradeCostText.text = tower.IsMaxLevel ? "MAX" : $"Upgrade: {tower.GetUpgradeCost()}";
-      sellPriceText.text   = $"Sell: {tower.GetSellPrice()}";
-      
-      upgradeButton.interactable = !tower.IsMaxLevel;
-      
-      DrawUpgradePreview(tower);
-      
-      LayoutRebuilder.ForceRebuildLayoutImmediate(_rect);
-
-      PositionNearScreenPoint(screenPosOfTower);
+        upgradePreviewText.gameObject.SetActive(false);
+        return;
     }
-    public void Show(TowerRuntimeBase tower) => Show(tower, _rect.position);
 
-    public void Hide()
+    upgradePreviewText.gameObject.SetActive(true);
+    upgradePreviewText.text = "<i>Next level:</i>\n" + preview;
+    
+    LayoutRebuilder.ForceRebuildLayoutImmediate(_rect);
+    if (_hasLastScreenPos) PositionNearScreenPoint(_lastScreenPos);
+}
+
+public void HideUpgradePreview()
+{
+    if (upgradePreviewText == null) return;
+
+    bool wasActive = upgradePreviewText.gameObject.activeSelf;
+    if (wasActive) upgradePreviewText.gameObject.SetActive(false);
+
+  
+    if (wasActive)
     {
-      bool wasVisible = gameObject.activeSelf;
-      _currentTower = null;
-      gameObject.SetActive(false);
-      if (wasVisible) OnHidden?.Invoke();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_rect);
+        if (_hasLastScreenPos) PositionNearScreenPoint(_lastScreenPos);
     }
+}
+
+public void Hide()
+{
+    bool wasVisible = gameObject.activeSelf;
+    _currentTower = null;
+    _hasLastScreenPos = false;
+    HideUpgradePreview();
+    gameObject.SetActive(false);
+    if (wasVisible) OnHidden?.Invoke();
+}
 
     private void PositionNearScreenPoint(Vector2 screenPosOfTower)
     {

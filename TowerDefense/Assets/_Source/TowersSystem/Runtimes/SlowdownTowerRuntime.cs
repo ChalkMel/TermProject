@@ -72,8 +72,8 @@ namespace TowersSystem.Runtimes
             float nextSlow  = Mathf.Min(Config.Buff + _levelBuffBonus + slow_bonus_per_level);
             float nextRange = Range + level_range_bonus + range_bonus_per_level;
 
-            return $"Slow: -{EffectiveSlowPercent}% → -{nextSlow}%\n" +
-                   $"Range: {Range:F1} → {nextRange:F1}";
+            return $"Slow:\n -{EffectiveSlowPercent}% → <color={color}>-{nextSlow}%\n</color={color}>" +
+                   $"Range:\n {Range:F1} → <color={color}>{nextRange:F1}</color={color}>";
         }
     }
 }

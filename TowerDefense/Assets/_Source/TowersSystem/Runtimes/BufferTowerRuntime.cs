@@ -82,8 +82,8 @@ namespace TowersSystem.Runtimes
             int nextBuff    = EffectiveBuff + buff_bonus_per_level;
             float nextRange = Range + level_range_bonus + range_bonus_per_level;
 
-            return $"Buff: +{EffectiveBuff}% → +{nextBuff}%\n" +
-                   $"Range: {Range:F1} → {nextRange:F1}";
+            return $"Buff:\n +{EffectiveBuff}% → +<color={color}>{nextBuff}%\n</color={color}>" +
+                   $"Range:\n {Range:F1} → <color={color}>{nextRange:F1}</color={color}>";
         }
     }
 }
