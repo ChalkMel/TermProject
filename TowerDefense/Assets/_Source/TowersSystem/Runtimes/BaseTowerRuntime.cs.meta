@@ -1,3 +1,12 @@
 fileFormatVersion: 2
 guid: 6c42c7cd564b43cb8ec214a2f97de9d5
-timeCreated: 1790158071
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - upgradeFxPrefab: {fileID: 4656526435807817617, guid: 5d5d8630152027d4b80ef620c22c8d5c, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

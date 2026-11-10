@@ -24,3 +24,4 @@ MonoBehaviour:
   <Tile>k__BackingField: {fileID: 11400000, guid: a22e53239018369449a39b5ad1500d0a, type: 2}
   <Prefab>k__BackingField: {fileID: 1382389597540801863, guid: 975d9e2ac30ff4d4c8143446aa5a62c4, type: 3}
   <ProjectileSpeed>k__BackingField: 7
+  <UpgradeFX>k__BackingField: {fileID: 4656526435807817617, guid: 5d5d8630152027d4b80ef620c22c8d5c, type: 3}

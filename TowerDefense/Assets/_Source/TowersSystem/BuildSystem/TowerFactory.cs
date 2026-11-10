@@ -25,7 +25,7 @@ namespace TowersSystem.BuildSystem
       runtime.Initialize(config, cell);
       
       SetupRangeDetection(runtime);
-
+      
       return runtime;
     }
 

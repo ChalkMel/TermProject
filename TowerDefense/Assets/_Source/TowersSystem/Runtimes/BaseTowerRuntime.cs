@@ -1,3 +1,4 @@
+using System.Net;
 using UnityEngine;
 using EnemySystem;
 using TowersSystem.Config;
@@ -23,6 +24,7 @@ namespace TowersSystem.Runtimes
     protected float _levelRangeBonus;
     protected const float level_range_bonus = .2f;
     public bool CanBeBought;
+    private ParticleSystem _upgradeFX;
 
     public virtual float Range => Tower.Range + _levelRangeBonus;
 
@@ -37,6 +39,7 @@ namespace TowersSystem.Runtimes
       Tower = config;
       CellPosition = cellPosition;
       name = $"Tower_{config.Name}";
+      _upgradeFX = Instantiate(Tower.UpgradeFX, transform);
       OnInitialized();
     }
 
@@ -48,6 +51,7 @@ namespace TowersSystem.Runtimes
     public virtual bool UpgradeTower()
     {
       if (IsMaxLevel) return false;
+      _upgradeFX.Play();
       Level++;
       _levelRangeBonus += level_range_bonus;
       OnRangeChanged?.Invoke(Range);

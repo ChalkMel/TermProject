@@ -34,5 +34,6 @@ namespace TowersSystem.Config
     [field: SerializeField] public Tile Tile { get; private set; }
     [field: SerializeField] public GameObject Prefab { get; private set; }
     [field: SerializeField] public float ProjectileSpeed { get; private set; }
+    [field: SerializeField] public ParticleSystem UpgradeFX {get; private set; }
   }
 }
