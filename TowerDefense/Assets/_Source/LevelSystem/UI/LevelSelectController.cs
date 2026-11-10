@@ -46,13 +46,13 @@ namespace LevelSystem.UI
       BuildDifficultyList();
       SetupActions();
       
+      DifficultyConfig defaultDiff = defaultDifficulty;
+            if (defaultDiff == null && difficulties.Count > 0) defaultDiff = difficulties[0];
+            if (defaultDiff != null) SelectDifficulty(defaultDiff);
+            
       int firstUnlocked = LevelProgress.FirstUnlockedIndex(levels);
       if (firstUnlocked >= 0) SelectLevel(levels[firstUnlocked]);
-
-      DifficultyConfig defaultDiff = defaultDifficulty;
-      if (defaultDiff == null && difficulties.Count > 0) defaultDiff = difficulties[0];
-      if (defaultDiff != null) SelectDifficulty(defaultDiff);
-
+      
       RefreshInfoPanel();
     }
 
@@ -132,9 +132,8 @@ namespace LevelSystem.UI
         if (_selectedLevel == null) selectedLevelSubtitle.text = "";
         else
         {
-          string status = LevelProgress.IsCompleted(_selectedLevel) ? "  •  <color=#8fdd8f>Completed</color>" : "";
           selectedLevelSubtitle.text =
-            $"Starting credits: {_selectedLevel.StartingCredits * _selectedDifficulty.StartingCreditsMultiplier}    •    Base HP: {_selectedLevel.BaseHealth * _selectedDifficulty.BaseHealthMultiplier}{status}";
+            $"Starting credits: {_selectedLevel.StartingCredits * _selectedDifficulty.StartingCreditsMultiplier}    •    Base HP: {_selectedLevel.BaseHealth * _selectedDifficulty.BaseHealthMultiplier}";
         }
       }
 
@@ -144,7 +143,7 @@ namespace LevelSystem.UI
           : "Difficulty: —";
 
       if (selectedLevelIcon != null && _selectedLevel != null)
-        selectedLevelIcon.enabled = selectedLevelIcon.sprite != null;
+        selectedLevelIcon.sprite = _selectedLevel.LevelIcon;
 
       if (startButton != null)
         startButton.interactable =

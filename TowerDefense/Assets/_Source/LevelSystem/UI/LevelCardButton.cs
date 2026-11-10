@@ -54,9 +54,9 @@ namespace LevelSystem.UI
           ? "Locked"
           : (completed ? "Completed" : $"Level {config.LevelNumber}");
 
-      if (icon != null && iconSprite != null)
+      if (icon != null)
       {
-        icon.sprite = iconSprite;
+        icon.sprite = config.LevelIcon;
         icon.enabled = true;
       }
 

@@ -18,6 +18,6 @@ MonoBehaviour:
   <StartingCredits>k__BackingField: 120
   <BaseHealth>k__BackingField: 100
   <WaveGroups>k__BackingField: {fileID: 11400000, guid: 64c5109614bc45d439bcb09b75964d46, type: 2}
-  <NextLevel>k__BackingField: {fileID: 0}
-  <Description>k__BackingField: 
-  <LevelIcon>k__BackingField: {fileID: 0}
+  <NextLevel>k__BackingField: {fileID: 11400000, guid: e28b1bf40669ab246973c21ead60f590, type: 2}
+  <Description>k__BackingField: 22222
+  <LevelIcon>k__BackingField: {fileID: -3454738343640677128, guid: 9262359731bfd564a83d208a515c4f50, type: 3}

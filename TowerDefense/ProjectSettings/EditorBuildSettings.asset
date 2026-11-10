@@ -15,6 +15,9 @@ EditorBuildSettings:
     path: Assets/_Presentation/Scenes/Levels/New Scene.unity
     guid: a205ed4489360d540bbcafcd58d67a5d
   - enabled: 1
+    path: Assets/_Presentation/Scenes/Menus/LevelSelector.unity
+    guid: ad5ffad40cf821e43b9ef7550972b82e
+  - enabled: 1
     path: Assets/_Presentation/Scenes/Levels/Level1.unity
     guid: d60156b6cc66cdc429591d53a1573980
   m_configObjects:
