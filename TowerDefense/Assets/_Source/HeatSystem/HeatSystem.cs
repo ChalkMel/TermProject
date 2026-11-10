@@ -1,5 +1,6 @@
 using UnityEngine;
 using BaseSystem;
+using LevelSystem;
 
 namespace HeatSystem
 {
@@ -124,6 +125,15 @@ namespace HeatSystem
             SetOverheated(false);
             Debug.Log("[HeatSystem] Тепло кончилось — проигрыш.");
             enabled = false;
+        }
+        
+        public void ApplyDifficulty(DifficultyConfig difficulty)
+        {
+            if (difficulty == null) return;
+
+            decayPerSecond  *= difficulty.HeatDecayMultiplier;
+            heatPerPress    *= difficulty.HeatPerPressMultiplier;
+            overheatDamage  *= difficulty.OverheatDamageMultiplier;
         }
 
         public void SetMaxHeat(float value) => maxHeat = Mathf.Max(1f, value);

@@ -3,188 +3,193 @@ using System.Collections.Generic;
 using Resources;
 using BaseSystem;
 using EnemySystem.WavesSystem.Config;
+using LevelSystem;
 using TMPro;
 using UnityEngine;
 
 namespace EnemySystem
 {
-    public class EnemySpawner : MonoBehaviour
+  public class EnemySpawner : MonoBehaviour
+  {
+    private Credits _credits;
+    private DifficultyConfig _difficulty;
+
+    [SerializeField] private WaveGroups waveGroups;
+    [SerializeField] private EnemyPath path;
+    [SerializeField] private Transform spawnPoint;
+    [SerializeField] private Base baseRef;
+    [SerializeField] private TextMeshProUGUI text;
+
+    private int _currentWaveIndex;
+    private bool _isSpawning;
+    private Coroutine _currentWaveCoroutine;
+    private bool _allWavesCompletedInvoked;
+
+    private readonly List<EnemyRuntime> _aliveEnemies = new();
+    private int _spawnedInWave;
+    private int _killedInWave;
+    private int _totalInWave;
+    private bool _waveSpawnFinished;
+
+    public int KilledInWave => _killedInWave;
+    public int TotalInWave  => _totalInWave;
+    public int AliveInWave  => _aliveEnemies.Count;
+    public int CurrentWaveIndex => _currentWaveIndex;
+
+    public System.Action<int> OnWaveStarted;
+    public System.Action<int> OnWaveCompleted;
+    public System.Action OnAllWavesCompleted;
+    public System.Action<int, int, int> OnWaveCountersChanged;
+
+    public void Init(Credits credits, DifficultyConfig difficulty = null, WaveGroups overrideWaves = null)
     {
-        private Credits _credits;
-        [SerializeField] private WaveGroups waveGroups;
-        [SerializeField] private EnemyPath path;
-        [SerializeField] private Transform spawnPoint;
-        [SerializeField] private Base baseRef;
-        [SerializeField] private TextMeshProUGUI text;
-
-        private int _currentWaveIndex;
-        private bool _isSpawning;
-        private Coroutine _currentWaveCoroutine;
-        private bool _allWavesCompletedInvoked;
-        
-        private readonly List<EnemyRuntime> _aliveEnemies = new();
-        private int _spawnedInWave;
-        private int _killedInWave;
-        private int _totalInWave;
-        private bool _waveSpawnFinished;
-
-        public int KilledInWave => _killedInWave;
-        public int TotalInWave => _totalInWave;
-        public int AliveInWave => _aliveEnemies.Count;
-        public int CurrentWaveIndex => _currentWaveIndex;
-
-        public System.Action<int> OnWaveStarted;
-        public System.Action<int> OnWaveCompleted;
-        public System.Action OnAllWavesCompleted;
-        public System.Action<int, int, int> OnWaveCountersChanged;
-
-        public void Init(Credits credits)
-        {
-            _credits = credits;
-            StartSpawning();
-        }
-
-        private void StartSpawning()
-        {
-            if (waveGroups == null || waveGroups.WaveCount == 0) return;
-
-            _currentWaveIndex = 0;
-            _isSpawning = true;
-            _allWavesCompletedInvoked = false;
-            SpawnNextWave();
-            OnWaveCountersChanged?.Invoke(_killedInWave, _totalInWave, _currentWaveIndex+1);
-        }
-
-        public void StopSpawning()
-        {
-            _isSpawning = false;
-            if (_currentWaveCoroutine != null)
-            {
-                StopCoroutine(_currentWaveCoroutine);
-                _currentWaveCoroutine = null;
-            }
-        }
-
-        private void SpawnNextWave()
-        {
-            if (!_isSpawning) return;
-
-            text.text = "New Wave";
-
-            if (_currentWaveIndex >= waveGroups.WaveCount)
-            {
-                CompleteAllWaves();
-                return;
-            }
-
-            WaveConfig currentWave = waveGroups.GetWave(_currentWaveIndex);
-            if (currentWave == null)
-            {
-                _currentWaveIndex++;
-                SpawnNextWave();
-                return;
-            }
-            
-            _aliveEnemies.Clear();
-            _spawnedInWave = 0;
-            _killedInWave = 0;
-            _waveSpawnFinished = false;
-
-            _totalInWave = CountEnemiesInWave(currentWave);
-            OnWaveCountersChanged?.Invoke(_killedInWave, _totalInWave, _currentWaveIndex+1);
-
-            OnWaveStarted?.Invoke(_currentWaveIndex);
-            _currentWaveCoroutine = StartCoroutine(SpawnWaveRoutine(currentWave));
-        }
-
-        private static int CountEnemiesInWave(WaveConfig wave)
-        {
-            int total = 0;
-            foreach (EnemyGroup g in wave.Groups)
-                if (g.Enemy != null) total += g.Count;
-            return total;
-        }
-
-        private IEnumerator SpawnWaveRoutine(WaveConfig currentWave)
-        {
-            yield return new WaitForSeconds(currentWave.Delay);
-
-            foreach (EnemyGroup group in currentWave.Groups)
-            {
-                if (group.Enemy == null) continue;
-
-                for (int i = 0; i < group.Count; i++)
-                {
-                    SpawnEnemy(group.Enemy);
-
-                    if (i < group.Count - 1)
-                        yield return new WaitForSeconds(group.Interval);
-                }
-            }
-
-            _waveSpawnFinished = true;
-            _currentWaveCoroutine = null;
-        }
-
-        private void Update()
-        {
-            if (!_isSpawning) return;
-
-            if (_waveSpawnFinished && _aliveEnemies.Count == 0)
-            {
-                _waveSpawnFinished = false;
-                OnWaveCompleted?.Invoke(_currentWaveIndex);
-                _currentWaveIndex++;
-                SpawnNextWave();
-            }
-        }
-
-        private void CompleteAllWaves()
-        {
-            if (_allWavesCompletedInvoked) return;
-            _allWavesCompletedInvoked = true;
-            _isSpawning = false;
-            OnAllWavesCompleted?.Invoke();
-        }
-
-        private void SpawnEnemy(EnemyConfig enemyConfig)
-        {
-            if (enemyConfig == null || enemyConfig.Prefab == null) return;
-            if (spawnPoint == null) return;
-
-            var enemyObj = Instantiate(enemyConfig.Prefab, spawnPoint.position, Quaternion.identity);
-            EnemyRuntime enemyRuntime = enemyObj.GetComponent<EnemyRuntime>();
-            if (enemyRuntime == null) return;
-
-            enemyRuntime.Initialize(enemyConfig, path, _credits, baseRef);
-            enemyRuntime.OnEnemyDied += HandleEnemyDied;
-            enemyRuntime.OnEnemyReachedBase += HandleEnemyReachedBase;
-
-            _aliveEnemies.Add(enemyRuntime);
-            _spawnedInWave++;
-        }
-
-        private void HandleEnemyDied(EnemyRuntime enemy)
-        {
-            Unsubscribe(enemy);
-
-            _killedInWave++;
-            OnWaveCountersChanged?.Invoke(_killedInWave, _totalInWave, _currentWaveIndex+1);
-        }
-
-        private void HandleEnemyReachedBase(EnemyRuntime enemy)
-        {
-            _killedInWave++;
-            OnWaveCountersChanged?.Invoke(_killedInWave, _totalInWave, _currentWaveIndex+1);
-            Unsubscribe(enemy);
-        }
-
-        private void Unsubscribe(EnemyRuntime enemy)
-        {
-            if (enemy == null) return;
-            enemy.OnEnemyDied -= HandleEnemyDied;
-            enemy.OnEnemyReachedBase -= HandleEnemyReachedBase;
-            _aliveEnemies.Remove(enemy);
-        }
+      _credits = credits;
+      _difficulty = difficulty;
+      if (overrideWaves != null) waveGroups = overrideWaves;
+      StartSpawning();
     }
+
+    private void StartSpawning()
+    {
+      if (waveGroups == null || waveGroups.WaveCount == 0) return;
+
+      _currentWaveIndex = 0;
+      _isSpawning = true;
+      _allWavesCompletedInvoked = false;
+      SpawnNextWave();
+      OnWaveCountersChanged?.Invoke(_killedInWave, _totalInWave, _currentWaveIndex + 1);
+    }
+
+    public void StopSpawning()
+    {
+      _isSpawning = false;
+      if (_currentWaveCoroutine != null)
+      {
+        StopCoroutine(_currentWaveCoroutine);
+        _currentWaveCoroutine = null;
+      }
+    }
+
+    private void SpawnNextWave()
+    {
+      if (!_isSpawning) return;
+
+      text.text = "New Wave";
+
+      if (_currentWaveIndex >= waveGroups.WaveCount)
+      {
+        CompleteAllWaves();
+        return;
+      }
+
+      WaveConfig currentWave = waveGroups.GetWave(_currentWaveIndex);
+      if (currentWave == null)
+      {
+        _currentWaveIndex++;
+        SpawnNextWave();
+        return;
+      }
+
+      _aliveEnemies.Clear();
+      _spawnedInWave = 0;
+      _killedInWave = 0;
+      _waveSpawnFinished = false;
+
+      _totalInWave = CountEnemiesInWave(currentWave);
+      OnWaveCountersChanged?.Invoke(_killedInWave, _totalInWave, _currentWaveIndex + 1);
+      OnWaveStarted?.Invoke(_currentWaveIndex);
+
+      _currentWaveCoroutine = StartCoroutine(SpawnWaveRoutine(currentWave));
+    }
+
+    private static int CountEnemiesInWave(WaveConfig wave)
+    {
+      int total = 0;
+      foreach (EnemyGroup g in wave.Groups)
+        if (g.Enemy != null) total += g.Count;
+      return total;
+    }
+
+    private IEnumerator SpawnWaveRoutine(WaveConfig currentWave)
+    {
+      float pacing = _difficulty?.WavePacingMultiplier ?? 1f;
+
+      yield return new WaitForSeconds(currentWave.Delay * pacing);
+
+      foreach (EnemyGroup group in currentWave.Groups)
+      {
+        if (group.Enemy == null) continue;
+
+        for (int i = 0; i < group.Count; i++)
+        {
+          SpawnEnemy(group.Enemy);
+          if (i < group.Count - 1)
+            yield return new WaitForSeconds(group.Interval * pacing);
+        }
+      }
+
+      _waveSpawnFinished = true;
+      _currentWaveCoroutine = null;
+    }
+
+    private void Update()
+    {
+      if (!_isSpawning) return;
+
+      if (_waveSpawnFinished && _aliveEnemies.Count == 0)
+      {
+        _waveSpawnFinished = false;
+        OnWaveCompleted?.Invoke(_currentWaveIndex);
+        _currentWaveIndex++;
+        SpawnNextWave();
+      }
+    }
+
+    private void CompleteAllWaves()
+    {
+      if (_allWavesCompletedInvoked) return;
+      _allWavesCompletedInvoked = true;
+      _isSpawning = false;
+      OnAllWavesCompleted?.Invoke();
+    }
+
+    private void SpawnEnemy(EnemyConfig enemyConfig)
+    {
+      if (enemyConfig == null || enemyConfig.Prefab == null) return;
+      if (spawnPoint == null) return;
+
+      var enemyObj = Instantiate(enemyConfig.Prefab, spawnPoint.position, Quaternion.identity);
+      EnemyRuntime enemyRuntime = enemyObj.GetComponent<EnemyRuntime>();
+      if (enemyRuntime == null) return;
+
+      enemyRuntime.Initialize(enemyConfig, path, _credits, baseRef, _difficulty);
+      enemyRuntime.OnEnemyDied        += HandleEnemyDied;
+      enemyRuntime.OnEnemyReachedBase += HandleEnemyReachedBase;
+
+      _aliveEnemies.Add(enemyRuntime);
+      _spawnedInWave++;
+    }
+
+    private void HandleEnemyDied(EnemyRuntime enemy)
+    {
+      Unsubscribe(enemy);
+      _killedInWave++;
+      OnWaveCountersChanged?.Invoke(_killedInWave, _totalInWave, _currentWaveIndex + 1);
+    }
+
+    private void HandleEnemyReachedBase(EnemyRuntime enemy)
+    {
+      _killedInWave++;
+      OnWaveCountersChanged?.Invoke(_killedInWave, _totalInWave, _currentWaveIndex + 1);
+      Unsubscribe(enemy);
+    }
+
+    private void Unsubscribe(EnemyRuntime enemy)
+    {
+      if (enemy == null) return;
+      enemy.OnEnemyDied        -= HandleEnemyDied;
+      enemy.OnEnemyReachedBase -= HandleEnemyReachedBase;
+      _aliveEnemies.Remove(enemy);
+    }
+  }
 }

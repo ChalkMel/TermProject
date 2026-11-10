@@ -1,19 +1,17 @@
 using System;
-using UnityEngine;
 
 namespace Resources
 {
     public class Credits
     {
-        [SerializeField] private int _money = 120;
-    
+        private int _money;
+
+        public Credits(int startingMoney = 120) => _money = startingMoney;
+
         public event Action<int> MoneyChanged;
-    
-        public int GetMoney()
-        {
-            return _money;
-        }
-        
+
+        public int GetMoney() => _money;
+
         public void AddMoney(int amount)
         {
             _money += amount;
@@ -22,18 +20,10 @@ namespace Resources
 
         public bool TrySpendMoney(int amount)
         {
-            if (_money >= amount)
-            {
-                SpendMoney(amount);
-                return true;
-            }
-            return false;
-        }
-
-        private void SpendMoney(int amount)
-        {
+            if (_money < amount) return false;
             _money -= amount;
             MoneyChanged?.Invoke(_money);
+            return true;
         }
     }
 }
