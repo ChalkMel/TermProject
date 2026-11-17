@@ -21,3 +21,6 @@ MonoBehaviour:
   <NextLevel>k__BackingField: {fileID: 11400000, guid: 2786df780515df24eabaa4287bae2f97, type: 2}
   <Description>k__BackingField: 11111
   <LevelIcon>k__BackingField: {fileID: -3198648580645691918, guid: c1efbeda85dbe0f408d5887a5ae90031, type: 3}
+  <Abilities>k__BackingField:
+  - {fileID: 11400000, guid: 4e7002228fd4c224abe25aced620febb, type: 2}
+  - {fileID: 11400000, guid: 47044a135a47c9d44b075b57e49c8333, type: 2}

@@ -11,6 +11,7 @@ namespace Utils
     [SerializeField] private Button downButton;
     [SerializeField] private TextMeshProUGUI timeText;
     [SerializeField] private Button addButton;
+    [SerializeField] private Button addManaButton;
 
     private Credits _credits;
     public void Init( Credits credits)
@@ -47,6 +48,11 @@ namespace Utils
     private void AddMoney()
     {
       _credits.AddMoney(5);
+    }
+
+    private void AddMana()
+    {
+      
     }
   }
 }
