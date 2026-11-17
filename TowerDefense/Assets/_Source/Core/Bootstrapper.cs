@@ -1,9 +1,11 @@
+using Abilities;
 using AcornSystem;
 using BaseSystem;
 using EnemySystem;
 using HeatSystem;
 using LevelSystem;
 using Resources;
+using ResourceSystem;
 using TowersSystem;
 using TowersSystem.BuildSystem;
 using UnityEngine;
@@ -24,10 +26,16 @@ namespace Core
     [Header("Level / Difficulty")]
     [SerializeField] private Base baseRef;
     [SerializeField] private HeatSystem.HeatSystem heatSystem;
-    [Tooltip("Используется если сцена запущена напрямую (без GameSession).")]
-    [SerializeField] private DifficultyConfig fallbackDifficulty;
+    
+    [Header("Abilities")]
+    [SerializeField] private AbilityController abilityController;
+    [SerializeField] private AbilityBar abilityBar;
+    [SerializeField] private ManaView manaView;
+    [SerializeField] private float maxMana = 100f;
 
     private Credits _credits;
+    private Mana _mana;
+    
     [SerializeField] private Tilemap towerTilemap;
 
     private PlacedTowerRegistry _registry;
@@ -39,13 +47,15 @@ namespace Core
     private void Awake()
     {
       LevelConfig level = GameSession.CurrentLevel;
-      DifficultyConfig difficulty = GameSession.CurrentDifficulty ?? fallbackDifficulty;
+      DifficultyConfig difficulty = GameSession.CurrentDifficulty;
 
       SetupCredits(level, difficulty);
+      SetupMana(difficulty); 
       SetupEnemySystem(difficulty, level);
       SetupTowerSystem();
       SetupBase(level, difficulty);
       SetupHeat(difficulty);
+      SetupAbilities(level);
       timeManager.Init(_credits);
       acornSpawner.Init(_credits, difficulty);
     }
@@ -58,9 +68,16 @@ namespace Core
       creditsView.Init(_credits);
     }
 
+    private void SetupMana(DifficultyConfig difficulty)
+    {
+      float manaMult = difficulty?.ManaGainMultiplier ?? 1f;
+      _mana = new Mana(maxMana * manaMult, 0f);
+      manaView?.Init(_mana);
+    }
+    
     private void SetupEnemySystem(DifficultyConfig difficulty, LevelConfig level)
     {
-      enemySpawner.Init(_credits, difficulty, level?.WaveGroups);
+      enemySpawner.Init(_credits, difficulty, level?.WaveGroups, _mana);
     }
 
     private void SetupBase(LevelConfig level, DifficultyConfig difficulty)
@@ -76,6 +93,16 @@ namespace Core
     {
       if (heatSystem == null) return;
       heatSystem.ApplyDifficulty(difficulty);
+    }
+    
+    private void SetupAbilities(LevelConfig level)
+    {
+      if (abilityController == null) return;
+
+      var levelAbilities = level != null ? level.Abilities : null;
+      abilityController.Configure(_mana, baseRef, heatSystem, levelAbilities);
+
+      abilityBar?.Init(abilityController, levelAbilities);
     }
 
     private void SetupTowerSystem()

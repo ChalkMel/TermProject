@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using Abilities;
 using EnemySystem.WavesSystem.Config;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace LevelSystem
 {
@@ -21,5 +24,9 @@ namespace LevelSystem
         [field: SerializeField] public string Description { get; private set; }
         [field: SerializeField] public Sprite LevelIcon { get; private set; }
         
+        [Header("Abilities")]
+        [Tooltip("Способности, доступные на этом уровне")]
+        [field:SerializeField] public List<AbilityConfig> Abilities { get; private set; }= new List<AbilityConfig>();
+
     }
 }

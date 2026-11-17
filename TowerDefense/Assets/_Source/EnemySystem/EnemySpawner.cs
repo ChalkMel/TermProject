@@ -4,6 +4,7 @@ using Resources;
 using BaseSystem;
 using EnemySystem.WavesSystem.Config;
 using LevelSystem;
+using ResourceSystem;
 using TMPro;
 using UnityEngine;
 
@@ -13,6 +14,7 @@ namespace EnemySystem
   {
     private Credits _credits;
     private DifficultyConfig _difficulty;
+    private Mana _mana;
 
     [SerializeField] private WaveGroups waveGroups;
     [SerializeField] private EnemyPath path;
@@ -41,10 +43,14 @@ namespace EnemySystem
     public System.Action OnAllWavesCompleted;
     public System.Action<int, int, int> OnWaveCountersChanged;
 
-    public void Init(Credits credits, DifficultyConfig difficulty = null, WaveGroups overrideWaves = null)
+    public void Init(Credits credits,
+      DifficultyConfig difficulty = null,
+      WaveGroups overrideWaves = null,
+      Mana mana = null)
     {
       _credits = credits;
       _difficulty = difficulty;
+      _mana = mana;
       if (overrideWaves != null) waveGroups = overrideWaves;
       StartSpawning();
     }
@@ -162,7 +168,7 @@ namespace EnemySystem
       EnemyRuntime enemyRuntime = enemyObj.GetComponent<EnemyRuntime>();
       if (enemyRuntime == null) return;
 
-      enemyRuntime.Initialize(enemyConfig, path, _credits, baseRef, _difficulty);
+      enemyRuntime.Initialize(enemyConfig, path, _credits, baseRef, _difficulty, _mana);
       enemyRuntime.OnEnemyDied        += HandleEnemyDied;
       enemyRuntime.OnEnemyReachedBase += HandleEnemyReachedBase;
 

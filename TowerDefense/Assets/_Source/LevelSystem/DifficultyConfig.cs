@@ -34,5 +34,9 @@ namespace LevelSystem
         [field: SerializeField] public float HeatDecayMultiplier { get; private set; } = 1f;
         [field: SerializeField] public float HeatPerPressMultiplier { get; private set; } = 1f;
         [field: SerializeField] public float OverheatDamageMultiplier { get; private set; } = 1f;
+        
+        [Header("Mana")]
+        [SerializeField] private float manaGainMultiplier = 1f;
+        public float ManaGainMultiplier => manaGainMultiplier;
     }
 }

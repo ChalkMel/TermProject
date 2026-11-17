@@ -5,6 +5,7 @@ using BaseSystem;
 using EnemySystem.WavesSystem.Config;
 using EnemySystem.Status;
 using LevelSystem;
+using ResourceSystem;
 
 namespace EnemySystem
 {
@@ -12,6 +13,7 @@ namespace EnemySystem
   {
     [SerializeField] private EnemyConfig enemyType;
     [SerializeField] private EnemyHealthBar healthBar;
+    [SerializeField] private float manaPerKill = 5f;
 
     [Header("Death")]
     [SerializeField] private ParticleSystem deathParticles;
@@ -24,6 +26,7 @@ namespace EnemySystem
     private Base _base;
     private int _currentPointIndex;
     private Credits _credits;
+    private Mana _mana;
     
     private float _maxHealth;
     private float _speed;
@@ -49,17 +52,18 @@ namespace EnemySystem
       if (Status == null) Status = gameObject.AddComponent<EnemyStatusController>();
     }
 
-    public void Initialize(
-        EnemyConfig config,
-        EnemyPath path,
-        Credits credits,
-        Base baseRef,
-        DifficultyConfig difficulty = null)
+    public void Initialize(EnemyConfig config,
+      EnemyPath path,
+      Credits credits,
+      Base baseRef,
+      DifficultyConfig difficulty = null,
+      Mana mana = null)
     {
       enemyType = config;
       _path = path;
       _credits = credits;
       _base = baseRef;
+      _mana = mana;
 
       float hpMult  = difficulty?.EnemyHealthMultiplier ?? 1f;
       float dmgMult = difficulty?.EnemyDamageMultiplier  ?? 1f;
@@ -136,6 +140,7 @@ namespace EnemySystem
 
       OnEnemyDied?.Invoke(this);
       _credits.AddMoney(_reward);
+      _mana?.Add(manaPerKill);
 
       if (bodyCollider != null) bodyCollider.enabled = false;
       if (healthBar != null) healthBar.Hide();
