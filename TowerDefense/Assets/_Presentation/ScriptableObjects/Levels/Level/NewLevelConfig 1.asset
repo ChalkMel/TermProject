@@ -15,8 +15,8 @@ MonoBehaviour:
   <DisplayName>k__BackingField: Level 2
   <LevelNumber>k__BackingField: 2
   <SceneName>k__BackingField: Level1
-  <StartingCredits>k__BackingField: 120
-  <BaseHealth>k__BackingField: 100
+  <StartingCredits>k__BackingField: 2000
+  <BaseHealth>k__BackingField: 10
   <WaveGroups>k__BackingField: {fileID: 11400000, guid: 64c5109614bc45d439bcb09b75964d46, type: 2}
   <NextLevel>k__BackingField: {fileID: 11400000, guid: e28b1bf40669ab246973c21ead60f590, type: 2}
   <Description>k__BackingField: 22222

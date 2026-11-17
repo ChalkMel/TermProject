@@ -39,7 +39,7 @@ namespace LevelSystem.UI
       _button.onClick.AddListener(HandleClick);
     }
     
-    public void Bind(LevelConfig config, bool locked, bool completed, Sprite iconSprite = null)
+    public void Bind(LevelConfig config, bool locked, bool completed)
     {
       Config = config;
       _locked = locked;
