@@ -56,7 +56,7 @@ namespace Core
       SetupBase(level, difficulty);
       SetupHeat(difficulty);
       SetupAbilities(level);
-      timeManager.Init(_credits);
+      timeManager.Init(_credits, _mana);
       acornSpawner.Init(_credits, difficulty);
     }
 

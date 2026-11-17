@@ -1,4 +1,5 @@
 using Resources;
+using ResourceSystem;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,12 +15,15 @@ namespace Utils
     [SerializeField] private Button addManaButton;
 
     private Credits _credits;
-    public void Init( Credits credits)
+    private Mana _mana;
+    public void Init( Credits credits, Mana mana)
     {
       _credits = credits;
-      upButton.onClick.AddListener(() => AddTime());
-      downButton.onClick.AddListener(() => RemoveTime());
-      addButton.onClick.AddListener(() => AddMoney());
+      _mana = mana;
+      upButton.onClick.AddListener(AddTime);
+      downButton.onClick.AddListener(RemoveTime);
+      addButton.onClick.AddListener(AddMoney);
+      addManaButton.onClick.AddListener(AddMana);
       UpdateTime();
     }
 
@@ -47,12 +51,12 @@ namespace Utils
     
     private void AddMoney()
     {
-      _credits.AddMoney(5);
+      _credits.AddMoney(20);
     }
 
     private void AddMana()
     {
-      
+      _mana.Add(10);
     }
   }
 }
