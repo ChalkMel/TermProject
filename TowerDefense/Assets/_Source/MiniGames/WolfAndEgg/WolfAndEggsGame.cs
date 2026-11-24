@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -34,6 +35,7 @@ namespace MiniGames.WolfAndEggs
         private int _score;
         private int _health;
         private bool _ended;
+        public event Action<bool> OnGameEnded;
 
         private void Awake()
         {
@@ -64,11 +66,6 @@ namespace MiniGames.WolfAndEggs
             spawner.OnItemCaught       -= HandleCaught;
             spawner.OnItemMissed       -= HandleMissed;
             spawner.OnSequenceCompleted -= HandleSequenceCompleted;
-        }
-
-        private void Update()
-        {
-            if (_ended && Input.GetKeyDown(KeyCode.R)) Restart();
         }
 
         private void HandleCaught(FallingItem item)
@@ -122,7 +119,8 @@ namespace MiniGames.WolfAndEggs
 
             if (gameOverPanel != null) gameOverPanel.SetActive(true);
             if (gameOverText != null)
-                gameOverText.text = $"Score: {_score}\nPress R to restart";
+                gameOverText.text = $"Score: {_score}\n";
+            OnGameEnded?.Invoke(false);
         }
 
         private void Win()
@@ -134,7 +132,8 @@ namespace MiniGames.WolfAndEggs
 
             if (winPanel != null) winPanel.SetActive(true);
             if (winText != null)
-                winText.text = $"You Win!\nScore: {_score}\nPress R to restart";
+                winText.text = $"You Win!\nScore: {_score}\n";
+            OnGameEnded?.Invoke(true);
         }
 
         private void Restart()

@@ -7,6 +7,7 @@ namespace TowersSystem.BuildSystem
   public class PlacedTowerRegistry
   {
     private readonly Dictionary<Vector3Int, TowerRuntimeBase> _towers = new();
+    public IEnumerable<TowerRuntimeBase> All => _towers.Values;
 
     public bool TryGet(Vector3Int cell, out TowerRuntimeBase tower) =>
       _towers.TryGetValue(cell, out tower);

@@ -1,11 +1,12 @@
 using UnityEngine;
 using BaseSystem;
+using Core.Core;
 using LevelSystem;
 using SoundSystem;
 
 namespace HeatSystem
 {
-    public class HeatSystem : MonoBehaviour
+    public class HeatSystem : MonoBehaviour, IGameplayPausable
     {
         [Header("Refs")]
         [SerializeField] private Base baseRef;
@@ -42,6 +43,9 @@ namespace HeatSystem
         public System.Action OnOverheated;
         public System.Action OnOverheatRecovered;
 
+        public void PauseGameplay()  => enabled = false;
+        public void ResumeGameplay() => enabled = true;
+        
         private void Start()
         {
             _heat = Mathf.Clamp(startHeat, 0f, maxHeat);
@@ -52,6 +56,7 @@ namespace HeatSystem
         
         private void Update()
         {
+            if(!enabled) return;
             if (!IsAlive) return;
 
             if (_pressTimer > 0f) _pressTimer -= Time.deltaTime;

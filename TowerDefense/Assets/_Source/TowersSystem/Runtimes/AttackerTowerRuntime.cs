@@ -29,6 +29,7 @@ namespace TowersSystem.Runtimes
 
         private void Update()
         {
+            if (Paused) return;
             if (_currentCooldown > 0f)
                 _currentCooldown -= Time.deltaTime * Status.AttackSpeedMultiplier;
 

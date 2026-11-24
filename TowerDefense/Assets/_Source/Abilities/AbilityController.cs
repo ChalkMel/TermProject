@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using BaseSystem;
+using Core.Core;
 using EnemySystem;
 using HeatSystem;
 using Resources;
@@ -8,13 +9,14 @@ using UnityEngine;
 
 namespace Abilities
 {
-    public class AbilityController : MonoBehaviour
+    public class AbilityController : MonoBehaviour, IGameplayPausable
     {
         [Header("Refs")]
         [SerializeField] private Base baseRef;
         [SerializeField] private HeatSystem.HeatSystem heatSystem;
 
         private Mana _mana;
+        private bool _paused;
         
         private readonly Dictionary<AbilityType, AbilityConfig> _configs = new();
         private readonly Dictionary<AbilityType, float> _cooldownUntil = new();
@@ -58,6 +60,7 @@ namespace Abilities
 
         public bool CanActivate(AbilityType type)
         {
+            if (_paused) return false;
             if (!HasAbility(type)) return false;
             var cfg = _configs[type];
             if (IsOnCooldown(type)) return false;
@@ -125,5 +128,13 @@ namespace Abilities
             if (baseRef == null) return;
             baseRef.Heal(cfg.HealAmount);
         }
+        
+        public void PauseGameplay()
+        {
+            _paused = true;
+            if (_dotRoutine != null) { StopCoroutine(_dotRoutine); _dotRoutine = null; }
+        }
+
+        public void ResumeGameplay() => _paused = false;
     }
 }

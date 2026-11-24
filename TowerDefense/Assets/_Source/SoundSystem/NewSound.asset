@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8304e2cf060c411cb1ae2dc3bd30acc0, type: 3}
   m_Name: NewSound
   m_EditorClassIdentifier: 
-  <Type>k__BackingField: 0
-  <Clip>k__BackingField: {fileID: 0}
+  <Type>k__BackingField: 100
+  <Clip>k__BackingField: {fileID: 8300000, guid: a3b5d666dc2ace844829559a745ae0a4, type: 3}
   <MixerGroup>k__BackingField: {fileID: 0}
   <Volume>k__BackingField: 1
-  <PitchVariation>k__BackingField: 0.05
+  <PitchVariation>k__BackingField: 0.051
   <Loop>k__BackingField: 0
-  <Is3D>k__BackingField: 0

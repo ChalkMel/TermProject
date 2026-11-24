@@ -54,6 +54,7 @@ namespace MiniGames.TapTapDash
 
         private void Update()
         {
+            if (Time.timeScale == 0f) return;
             if (_isDead || _isFinished) return;
             if (_isFalling) { UpdateFalling(); return; }
 

@@ -1,6 +1,7 @@
 using Abilities;
 using AcornSystem;
 using BaseSystem;
+using Core.Core;
 using EnemySystem;
 using HeatSystem;
 using LevelSystem;
@@ -24,6 +25,8 @@ namespace Core
     [SerializeField] private TimeManager timeManager;
     [SerializeField] private AcornSpawner acornSpawner;
     [SerializeField] private AudioService audioService;
+    [SerializeField] private GameFlowController gameFlow;
+    [SerializeField] private MinigameHost minigameHost;
 
     [Header("Level / Difficulty")]
     [SerializeField] private Base baseRef;
@@ -61,6 +64,15 @@ namespace Core
       SetupMusic(level);
       timeManager.Init(_credits, _mana);
       acornSpawner.Init(_credits, audioService, difficulty: difficulty);
+      
+      if (gameFlow != null)
+      {
+        gameFlow.RegisterPausable(heatSystem);
+        gameFlow.RegisterPausable(abilityController);
+        gameFlow.RegisterPausable(acornSpawner);
+        gameFlow.RegisterPausable(placementController);
+        gameFlow.RegisterPausable(enemySpawner);
+      }
     }
 
     private void SetupMusic(LevelConfig level)

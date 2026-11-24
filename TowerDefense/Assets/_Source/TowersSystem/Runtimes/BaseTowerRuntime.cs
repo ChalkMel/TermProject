@@ -29,6 +29,10 @@ namespace TowersSystem.Runtimes
     private ParticleSystem _upgradeFX;
 
     public virtual float Range => Tower.Range + _levelRangeBonus;
+    
+    protected bool Paused;
+    public virtual void PauseGameplay()  => Paused = true;
+    public virtual void ResumeGameplay() => Paused = false;
 
     protected virtual void Awake()
     {

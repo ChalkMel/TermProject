@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -23,6 +24,8 @@ namespace MiniGames.TapTapDash
         [SerializeField] private string restartSceneName = "";
 
         private bool _ended;
+        public event Action<bool> OnGameEnded;
+        private bool _restartEnabled = true;
 
         private void Awake()
         {
@@ -42,12 +45,6 @@ namespace MiniGames.TapTapDash
             runner.OnFinished     -= HandleFinished;
         }
 
-        private void Update()
-        {
-            if (!_ended) return;
-            if (Input.GetKeyDown(KeyCode.R)) Restart();
-        }
-
         private void HandleScoreChanged(int score) => UpdateScoreText(score);
         private void UpdateScoreText(int score)
         {
@@ -60,7 +57,8 @@ namespace MiniGames.TapTapDash
             _ended = true;
             if (gameOverPanel != null) gameOverPanel.SetActive(true);
             if (finalScoreText != null && runner != null)
-                finalScoreText.text = $"Score: {runner.Score}\nPress R to restart";
+                finalScoreText.text = $"Score: {runner.Score}\n";
+            OnGameEnded?.Invoke(false);
         }
 
         private void HandleFinished()
@@ -69,15 +67,8 @@ namespace MiniGames.TapTapDash
             _ended = true;
             if (winPanel != null) winPanel.SetActive(true);
             if (winScoreText != null && runner != null)
-                winScoreText.text = $"Level Complete!\nScore: {runner.Score}\nPress R to restart";
-        }
-
-        private void Restart()
-        {
-            string scene = string.IsNullOrEmpty(restartSceneName)
-                ? SceneManager.GetActiveScene().name
-                : restartSceneName;
-            SceneManager.LoadScene(scene);
+                winScoreText.text = $"Level Complete!\nScore: {runner.Score}\n";
+            OnGameEnded?.Invoke(true);
         }
     }
 }

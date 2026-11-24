@@ -1,3 +1,4 @@
+using Core.Core;
 using Resources;
 using SoundSystem;
 using TowersSystem.Config;
@@ -9,7 +10,7 @@ using UnityEngine.Tilemaps;
 
 namespace TowersSystem.BuildSystem
 {
-    public class TowerPlacementController : MonoBehaviour
+    public class TowerPlacementController : MonoBehaviour, IGameplayPausable
     {
         [Header("Scene refs")]
         [SerializeField] private TowerMenu menu;
@@ -167,6 +168,18 @@ namespace TowersSystem.BuildSystem
         {
             Vector3 worldPos = tilemap.GetCellCenterWorld(cell);
             return cam.WorldToScreenPoint(worldPos) + tooltipScreenOffset;
+        }
+        
+        public void PauseGameplay()
+        {
+            enabled = false;
+            foreach (var tower in _registry.All) tower.PauseGameplay();
+        }
+
+        public void ResumeGameplay()
+        {
+            enabled = true;
+            foreach (var tower in _registry.All) tower.ResumeGameplay();
         }
     }
 }

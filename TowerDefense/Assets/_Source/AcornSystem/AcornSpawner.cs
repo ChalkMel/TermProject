@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Core.Core;
 using LevelSystem;
 using Resources;
 using SoundSystem;
@@ -8,7 +9,7 @@ using UnityEngine.Tilemaps;
 
 namespace AcornSystem
 {
-  public class AcornSpawner : MonoBehaviour
+  public class AcornSpawner : MonoBehaviour, IGameplayPausable
   {
     [Header("Refs")]
     [SerializeField] private Tilemap spawnTilemap;
@@ -24,6 +25,10 @@ namespace AcornSystem
     private readonly List<Vector3Int> _spawnCells = new();
     private readonly List<Acorn> _activeAcorns = new();
     private IAudioService _audio;
+    private bool _paused;
+
+    public void PauseGameplay()  => _paused = true;
+    public void ResumeGameplay() => _paused = false;
 
     public void Init(Credits credits, IAudioService audio, DifficultyConfig difficulty = null)
     {
@@ -53,6 +58,7 @@ namespace AcornSystem
       while (true)
       {
         yield return new WaitForSeconds(spawnInterval * intervalMult);
+        while (_paused) yield return null;
 
         _activeAcorns.RemoveAll(a => a == null);
 

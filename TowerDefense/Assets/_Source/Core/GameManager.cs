@@ -2,6 +2,7 @@ using EnemySystem;
 using LevelSystem;
 using UnityEngine;
 using BaseSystem;
+using Core.Core;
 using MenuSystems;
 using SoundSystem;
 
@@ -17,6 +18,7 @@ namespace Core
         [SerializeField] private AudioService audioService;
 
         private bool _ended;
+        [SerializeField] private GameFlowController gameFlow;
 
         private void Awake()
         {
@@ -40,6 +42,7 @@ namespace Core
             audioService?.StopMusic();
             audioService?.Play(SoundType.Lose);
             loseScreen.SetActive(true);
+            gameFlow?.EndGame(false);
             EndGame();
         }
 
@@ -54,6 +57,7 @@ namespace Core
             audioService?.StopMusic();
             audioService?.Play(SoundType.Win); 
             winScreen.SetActive(true);
+            gameFlow?.EndGame(true);
             EndGame();
         }
 

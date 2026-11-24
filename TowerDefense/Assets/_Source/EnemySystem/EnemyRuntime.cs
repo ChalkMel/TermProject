@@ -29,6 +29,9 @@ namespace EnemySystem
     private Credits _credits;
     private Mana _mana;
     private IAudioService _audio;
+    private bool _paused;
+    public void Pause()  => _paused = true;
+    public void Resume() => _paused = false;
     
     private float _maxHealth;
     private float _speed;
@@ -38,6 +41,7 @@ namespace EnemySystem
 
     private bool _reachedBase;
     private bool _isDying;
+    
 
     public EnemyStatusController Status { get; private set; }
     public EnemyConfig Config => enemyType;
@@ -95,6 +99,7 @@ namespace EnemySystem
 
     private void Update()
     {
+      if (_paused) return;
       if (_isDying || !IsAlive) return;
       if (Status != null && Status.IsStunned) return;
       Move();

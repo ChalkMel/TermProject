@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Resources;
 using BaseSystem;
+using Core.Core;
 using EnemySystem.WavesSystem.Config;
 using LevelSystem;
 using ResourceSystem;
@@ -11,7 +13,7 @@ using UnityEngine;
 
 namespace EnemySystem
 {
-  public class EnemySpawner : MonoBehaviour
+  public class EnemySpawner : MonoBehaviour, IGameplayPausable
   {
     private Credits _credits;
     private DifficultyConfig _difficulty;
@@ -34,16 +36,19 @@ namespace EnemySystem
     private int _killedInWave;
     private int _totalInWave;
     private bool _waveSpawnFinished;
+    private bool _lastWaveResolved;
 
     public int KilledInWave => _killedInWave;
-    public int TotalInWave  => _totalInWave;
-    public int AliveInWave  => _aliveEnemies.Count;
+    public int TotalInWave => _totalInWave;
+    public int AliveInWave => _aliveEnemies.Count;
     public int CurrentWaveIndex => _currentWaveIndex;
 
-    public System.Action<int> OnWaveStarted;
-    public System.Action<int> OnWaveCompleted;
-    public System.Action OnAllWavesCompleted;
-    public System.Action<int, int, int> OnWaveCountersChanged;
+    public Action<int> OnWaveStarted;
+    public Action<int> OnWaveCompleted;
+    public Action OnAllWavesCompleted;
+    public Action<int, int, int> OnWaveCountersChanged;
+    private bool _lastWaveSpawned;
+    public event Action OnLastWaveReached;
 
     public void Init(Credits credits,
       DifficultyConfig difficulty = null,
@@ -92,11 +97,22 @@ namespace EnemySystem
         return;
       }
 
-      WaveConfig currentWave = waveGroups.GetWave(_currentWaveIndex);
-      if (currentWave == null)
+      if (_currentWaveIndex == waveGroups.WaveCount - 1)
       {
-        _currentWaveIndex++;
-        SpawnNextWave();
+        if (!_lastWaveResolved)
+        {
+          OnLastWaveReached?.Invoke();
+          return;
+        }
+
+        if (_lastWaveSpawned) return; // ← защита от второго спавна
+        _lastWaveSpawned = true;
+      }
+
+      WaveConfig currentWave = waveGroups.GetWave(_currentWaveIndex);
+      if (_currentWaveIndex == waveGroups.WaveCount - 1 && !_lastWaveResolved)
+      {
+        OnLastWaveReached?.Invoke();
         return;
       }
 
@@ -112,11 +128,28 @@ namespace EnemySystem
       _currentWaveCoroutine = StartCoroutine(SpawnWaveRoutine(currentWave));
     }
 
+    public void ResolveLastWave(bool skipLastWave)
+    {
+      if (_lastWaveResolved) return;
+      _lastWaveResolved = true;
+
+      if (skipLastWave)
+      {
+        _currentWaveIndex = waveGroups.WaveCount;
+        CompleteAllWaves();
+        return;
+      }
+
+      _isSpawning = true;
+      SpawnNextWave();
+    }
+
     private static int CountEnemiesInWave(WaveConfig wave)
     {
       int total = 0;
       foreach (EnemyGroup g in wave.Groups)
-        if (g.Enemy != null) total += g.Count;
+        if (g.Enemy != null)
+          total += g.Count;
       return total;
     }
 
@@ -173,7 +206,7 @@ namespace EnemySystem
       if (enemyRuntime == null) return;
 
       enemyRuntime.Initialize(enemyConfig, path, _credits, baseRef, _difficulty, _mana, _audio);
-      enemyRuntime.OnEnemyDied        += HandleEnemyDied;
+      enemyRuntime.OnEnemyDied += HandleEnemyDied;
       enemyRuntime.OnEnemyReachedBase += HandleEnemyReachedBase;
 
       _aliveEnemies.Add(enemyRuntime);
@@ -197,9 +230,20 @@ namespace EnemySystem
     private void Unsubscribe(EnemyRuntime enemy)
     {
       if (enemy == null) return;
-      enemy.OnEnemyDied        -= HandleEnemyDied;
+      enemy.OnEnemyDied -= HandleEnemyDied;
       enemy.OnEnemyReachedBase -= HandleEnemyReachedBase;
       _aliveEnemies.Remove(enemy);
+    }
+
+    public void PauseGameplay()
+    {
+      StopSpawning();
+      foreach (var e in _aliveEnemies) e?.Pause();
+    }
+
+    public void ResumeGameplay()
+    {
+      foreach (var e in _aliveEnemies) e?.Resume();
     }
   }
 }

@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9de6ca5af0634c97b63a38c1908dfe49, type: 3}
   m_Name: NewSoundLibrary
   m_EditorClassIdentifier: 
-  sounds: []
+  sounds:
+  - {fileID: 11400000, guid: 0a0700afb7582b04aa37070787919617, type: 2}
