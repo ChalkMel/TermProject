@@ -1901,10 +1901,10 @@ RectTransform:
   - {fileID: 2129432592}
   m_Father: {fileID: 379855461}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 523.51245, y: -9.245178}
-  m_SizeDelta: {x: -1282.7786, y: -64.7168}
+  m_SizeDelta: {x: 651.22144, y: 99.2832}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1872277629
 GameObject:
@@ -2126,7 +2126,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 60.6
+  m_fontSize: 72
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1

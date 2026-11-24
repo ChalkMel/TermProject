@@ -86,8 +86,8 @@ namespace Abilities
         {
             switch (cfg.Type)
             {
-                case AbilityType.DamageOverTime: StartDot(cfg); break;
-                case AbilityType.Heal:           HealBase(cfg); break;
+                case AbilityType.DamageOverTime:StartDot(cfg); break;
+                case AbilityType.Heal:HealBase(cfg); break;
             }
         }
 

@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -8,43 +9,36 @@ namespace LevelSystem.UI
   [RequireComponent(typeof(Button))]
   public class DifficultyButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
   {
-    [Header("UI refs")]
     [SerializeField] private Image background;
     [SerializeField] private TextMeshProUGUI label;
     [SerializeField] private TextMeshProUGUI description;
-
-    [Header("Colors")]
-    [SerializeField] private Color normalColor   = new Color(0.15f, 0.18f, 0.22f, 1f);
-    [SerializeField] private Color hoverColor    = new Color(0.22f, 0.27f, 0.32f, 1f);
-    [SerializeField] private Color selectedColor = new Color(0.30f, 0.55f, 0.35f, 1f);
-
-    [Header("Optional per-difficulty accent")]
-    [SerializeField] private Color accentColor = new Color(0.9f, 0.85f, 0.5f, 1f);
+    [SerializeField] private Color normalColor   = new(0.15f, 0.18f, 0.22f, 1f);
+    [SerializeField] private Color hoverColor    = new(0.22f, 0.27f, 0.32f, 1f);
+    [SerializeField] private Color selectedColor = new(0.30f, 0.55f, 0.35f, 1f);
+    [SerializeField] private Color accentColor   = new(0.9f, 0.85f, 0.5f, 1f);
 
     private Button _button;
     private bool _selected;
+    private DifficultyConfig _config;
 
-    public DifficultyConfig Config { get; private set; }
-    public System.Action<DifficultyButton> OnClick;
+    public DifficultyConfig Config => _config;
+    public event Action<DifficultyConfig> Clicked;
 
     private void Awake()
     {
       _button = GetComponent<Button>();
-      _button.onClick.AddListener(() => OnClick?.Invoke(this));
+      _button.onClick.AddListener(() => Clicked?.Invoke(_config));
     }
 
-    public void Bind(DifficultyConfig config, string descriptionText = null)
+    public void Bind(DifficultyViewModel vm)
     {
-      Config = config;
+      _config = vm.Config;
 
-      if (label != null)
-        label.text = !string.IsNullOrEmpty(config.DisplayName)
-          ? config.DisplayName
-          : config.name;
+      if (label != null) label.text = vm.Label;
 
       if (description != null)
       {
-        description.text = descriptionText ?? BuildAutoDescription(config);
+        description.text = vm.Description;
         if (accentColor.a > 0f) description.color = accentColor;
       }
 

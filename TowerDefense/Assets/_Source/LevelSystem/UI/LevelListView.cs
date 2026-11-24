@@ -13,21 +13,18 @@ namespace LevelSystem.UI
 
         public event Action<LevelConfig> LevelClicked;
 
-        public void Build(IList<LevelConfig> levels)
+        public void Build(IList<LevelCardViewModel> items)
         {
             Clear();
             if (cardPrefab == null || container == null) return;
 
-            foreach (var cfg in levels)
+            foreach (var vm in items)
             {
-                if (cfg == null) continue;
-
-                bool locked    = !LevelProgress.IsUnlocked(cfg, levels);
-                bool completed =  LevelProgress.IsCompleted(cfg);
+                if (vm.Config == null) continue;
 
                 var card = Instantiate(cardPrefab, container);
-                card.Bind(cfg, locked, completed);
-                card.OnClick += c => LevelClicked?.Invoke(c.Config);
+                card.Bind(vm);
+                card.Clicked += cfg => LevelClicked?.Invoke(cfg);
                 _cards.Add(card);
             }
         }

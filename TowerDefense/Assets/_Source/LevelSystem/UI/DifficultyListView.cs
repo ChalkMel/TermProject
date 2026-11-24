@@ -13,18 +13,17 @@ namespace LevelSystem.UI
 
         public event Action<DifficultyConfig> DifficultyClicked;
 
-        public void Build(IList<DifficultyConfig> difficulties)
+        public void Build(IList<DifficultyViewModel> items)
         {
             Clear();
             if (buttonPrefab == null || container == null) return;
 
-            foreach (var cfg in difficulties)
+            foreach (var vm in items)
             {
-                if (cfg == null) continue;
-
+                if (vm.Config == null) continue;
                 var btn = Instantiate(buttonPrefab, container);
-                btn.Bind(cfg);
-                btn.OnClick += b => DifficultyClicked?.Invoke(b.Config);
+                btn.Bind(vm);
+                btn.Clicked += cfg => DifficultyClicked?.Invoke(cfg);
                 _buttons.Add(btn);
             }
         }
