@@ -1,6 +1,7 @@
 using UnityEngine;
 using BaseSystem;
 using LevelSystem;
+using SoundSystem;
 
 namespace HeatSystem
 {
@@ -8,7 +9,7 @@ namespace HeatSystem
     {
         [Header("Refs")]
         [SerializeField] private Base baseRef;
-        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private IAudioService audioService;
 
         [Header("Heat")]
         [SerializeField] private float maxHeat = 100f;
@@ -25,6 +26,7 @@ namespace HeatSystem
         private float _pressTimer;
         private float _lockTimer;
         private bool _isOverheated;
+        private bool _coolingPlayed;
 
         public float Heat => _heat;
         public float MaxHeat => maxHeat;
@@ -46,6 +48,8 @@ namespace HeatSystem
             OnHeatChanged?.Invoke(_heat, maxHeat);
         }
 
+        public void SetAudio(IAudioService audio) => audioService = audio;
+        
         private void Update()
         {
             if (!IsAlive) return;
@@ -61,6 +65,12 @@ namespace HeatSystem
                     SetOverheated(false);
                 }
             }
+            
+            if (!_coolingPlayed && _heat <= 30f)
+            {
+                _coolingPlayed = true;
+                audioService?.Play(SoundType.KettleCooling);
+            }
 
             if (_heat > 0f)
             {
@@ -70,10 +80,6 @@ namespace HeatSystem
             }
 
             if (_heat <= 0f) Lose();
-            if(_heat <=10 && !audioSource.isPlaying)
-            {
-                audioSource.Play();
-            }
         }
 
         public void Press()
@@ -104,6 +110,7 @@ namespace HeatSystem
             _heat = maxHeat;
             _lockTimer = overheatLockTime;
             OnHeatChanged?.Invoke(_heat, maxHeat);
+            audioService?.Play(SoundType.KettleOverheat);
 
             SetOverheated(true);
             Debug.Log($"[HeatSystem] Перегрев! Урон чайнику: {overheatDamage}");

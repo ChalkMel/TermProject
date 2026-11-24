@@ -1,4 +1,5 @@
 using Resources;
+using SoundSystem;
 using TowersSystem.Runtimes;
 using UnityEngine;
 using Vector3 = UnityEngine.Vector3;
@@ -11,12 +12,14 @@ namespace TowersSystem.BuildSystem
     private readonly TowerTooltip _tooltip;
     private readonly RangeIndicator _range;
     private bool _disposed;
+    private readonly IAudioService _audio;
 
-    public TowerInteractionController(Credits credits, TowerTooltip tooltip, RangeIndicator range)
+    public TowerInteractionController(Credits credits, TowerTooltip tooltip, RangeIndicator range, IAudioService audio)
     {
       _credits = credits;
       _tooltip = tooltip;
       _range   = range;
+      _audio   = audio;
       _tooltip.OnHidden += HandleTooltipHidden;
     }
 
@@ -49,6 +52,7 @@ namespace TowersSystem.BuildSystem
       
       _tooltip.Show(tower, Camera.main.WorldToScreenPoint(tower.transform.position));
       _range.Show(tower.transform.position, tower.Range);
+      _audio?.Play(tower.Config.UpgradeSound);
       return true;
     }
 

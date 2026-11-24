@@ -3,6 +3,7 @@ using LevelSystem;
 using UnityEngine;
 using BaseSystem;
 using MenuSystems;
+using SoundSystem;
 
 namespace Core
 {
@@ -13,6 +14,7 @@ namespace Core
         [SerializeField] private GameObject winScreen;
         [SerializeField] private GameObject loseScreen;
         [SerializeField] private PauseMenu pauseMenu;
+        [SerializeField] private AudioService audioService;
 
         private bool _ended;
 
@@ -35,6 +37,8 @@ namespace Core
         {
             if (_ended) return;
             _ended = true;
+            audioService?.StopMusic();
+            audioService?.Play(SoundType.Lose);
             loseScreen.SetActive(true);
             EndGame();
         }
@@ -47,6 +51,8 @@ namespace Core
             if (GameSession.CurrentLevel != null)
                 LevelProgress.MarkCompleted(GameSession.CurrentLevel);
 
+            audioService?.StopMusic();
+            audioService?.Play(SoundType.Win); 
             winScreen.SetActive(true);
             EndGame();
         }

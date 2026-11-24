@@ -6,6 +6,7 @@ using EnemySystem.WavesSystem.Config;
 using EnemySystem.Status;
 using LevelSystem;
 using ResourceSystem;
+using SoundSystem;
 
 namespace EnemySystem
 {
@@ -27,6 +28,7 @@ namespace EnemySystem
     private int _currentPointIndex;
     private Credits _credits;
     private Mana _mana;
+    private IAudioService _audio;
     
     private float _maxHealth;
     private float _speed;
@@ -57,13 +59,15 @@ namespace EnemySystem
       Credits credits,
       Base baseRef,
       DifficultyConfig difficulty = null,
-      Mana mana = null)
+      Mana mana = null,
+      IAudioService audio = null)
     {
       enemyType = config;
       _path = path;
       _credits = credits;
       _base = baseRef;
       _mana = mana;
+      _audio = audio;
 
       float hpMult  = difficulty?.EnemyHealthMultiplier ?? 1f;
       float dmgMult = difficulty?.EnemyDamageMultiplier  ?? 1f;
@@ -116,7 +120,7 @@ namespace EnemySystem
     {
       if (_isDying) return;
       _reachedBase = true;
-
+      _audio?.Play(SoundType.KettleAttacked); 
       _base.GetDamage(_damage * Status.DamageMultiplier);
       OnEnemyReachedBase?.Invoke(this);
       Destroy(gameObject);
@@ -139,6 +143,7 @@ namespace EnemySystem
       _isDying = true;
 
       OnEnemyDied?.Invoke(this);
+      _audio?.Play(SoundType.EnemySatisfied);
       _credits.AddMoney(_reward);
       _mana?.Add(manaPerKill);
 

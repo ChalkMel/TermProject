@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Abilities;
 using EnemySystem.WavesSystem.Config;
+using SoundSystem;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -27,6 +28,9 @@ namespace LevelSystem
         [Header("Abilities")]
         [Tooltip("Способности, доступные на этом уровне")]
         [field:SerializeField] public List<AbilityConfig> Abilities { get; private set; }= new List<AbilityConfig>();
+        
+        [Header("Audio")]
+        [field: SerializeField] public SoundType BackgroundMusic { get; private set; } = SoundType.MusicDay;
 
     }
 }

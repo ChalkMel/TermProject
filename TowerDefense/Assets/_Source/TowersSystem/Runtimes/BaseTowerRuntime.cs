@@ -1,6 +1,7 @@
 using System.Net;
 using UnityEngine;
 using EnemySystem;
+using SoundSystem;
 using TowersSystem.Config;
 using TowersSystem.Stats;
 
@@ -8,6 +9,7 @@ namespace TowersSystem.Runtimes
 {
   public abstract class TowerRuntimeBase : MonoBehaviour
   {
+    protected IAudioService Audio { get; private set; }
     protected TowerConfig Tower;
     public System.Action<float> OnRangeChanged;
 
@@ -34,10 +36,11 @@ namespace TowersSystem.Runtimes
       if (Status == null) Status = gameObject.AddComponent<TowerStatusController>();
     }
 
-    public void Initialize(TowerConfig config, Vector3Int cellPosition)
+    public void Initialize(TowerConfig config, Vector3Int cellPosition, IAudioService audio)
     {
       Tower = config;
       CellPosition = cellPosition;
+      Audio = audio;
       name = $"Tower_{config.Name}";
       _upgradeFX = Instantiate(Tower.UpgradeFX, transform);
       OnInitialized();

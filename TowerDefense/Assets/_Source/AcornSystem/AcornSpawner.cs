@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using LevelSystem;
 using Resources;
+using SoundSystem;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -22,11 +23,13 @@ namespace AcornSystem
 
     private readonly List<Vector3Int> _spawnCells = new();
     private readonly List<Acorn> _activeAcorns = new();
+    private IAudioService _audio;
 
-    public void Init(Credits credits, DifficultyConfig difficulty = null)
+    public void Init(Credits credits, IAudioService audio, DifficultyConfig difficulty = null)
     {
       _credits = credits;
       _difficulty = difficulty;
+      _audio = audio;
       CacheSpawnCells();
 
       if (_spawnCells.Count == 0) return;
@@ -70,7 +73,7 @@ namespace AcornSystem
       float rewMult = _difficulty?.AcornRewardMultiplier ?? 1f;
       int scaledReward = Mathf.RoundToInt(reward * rewMult);
 
-      acorn.Initialize(this, _credits, scaledReward);
+      acorn.Initialize(this, _credits, scaledReward, _audio);
       acorn.OnPickedUp += HandleAcornPickedUp;
       _activeAcorns.Add(acorn);
     }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using EnemySystem;
+using SoundSystem;
 
 namespace TowersSystem.Runtimes
 {
@@ -10,21 +11,21 @@ namespace TowersSystem.Runtimes
     [SerializeField] private float rotateToDirection = 0f;
 
     private EnemyRuntime _target;
+    private IAudioService _audio;
     private float _damage;
     private float _speed;
-    private float _lifeTimer;
     private AttackerTowerRuntime _tower;
     private float _stunDuration;
 
     public void Initialize(EnemyRuntime target, float damage, float speed,
-      AttackerTowerRuntime attacker, float stunDuration = 0f)
+      AttackerTowerRuntime attacker, float stunDuration = 0f, IAudioService audio = null)
     {
-      _target       = target;
-      _damage       = damage;
-      _speed        = speed;
-      _lifeTimer    = maxLifetime;
-      _tower        = attacker;
+      _target = target;
+      _damage = damage;
+      _speed = speed;
+      _tower = attacker;
       _stunDuration = stunDuration;
+      _audio = audio;
     }
 
     private void Update()

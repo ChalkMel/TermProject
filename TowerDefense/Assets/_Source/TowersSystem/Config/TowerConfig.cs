@@ -1,3 +1,4 @@
+using SoundSystem;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -35,5 +36,10 @@ namespace TowersSystem.Config
     [field: SerializeField] public GameObject Prefab { get; private set; }
     [field: SerializeField] public float ProjectileSpeed { get; private set; }
     [field: SerializeField] public ParticleSystem UpgradeFX {get; private set; }
+    
+    [Header("Sounds")]
+    [field: SerializeField] public SoundType PlaceSound   { get; private set; }
+    [field: SerializeField] public SoundType SellSound    { get; private set; }
+    [field: SerializeField] public SoundType UpgradeSound { get; private set; }
   }
 }

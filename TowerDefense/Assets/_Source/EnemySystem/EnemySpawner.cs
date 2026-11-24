@@ -5,6 +5,7 @@ using BaseSystem;
 using EnemySystem.WavesSystem.Config;
 using LevelSystem;
 using ResourceSystem;
+using SoundSystem;
 using TMPro;
 using UnityEngine;
 
@@ -26,6 +27,7 @@ namespace EnemySystem
     private bool _isSpawning;
     private Coroutine _currentWaveCoroutine;
     private bool _allWavesCompletedInvoked;
+    private IAudioService _audio;
 
     private readonly List<EnemyRuntime> _aliveEnemies = new();
     private int _spawnedInWave;
@@ -46,11 +48,13 @@ namespace EnemySystem
     public void Init(Credits credits,
       DifficultyConfig difficulty = null,
       WaveGroups overrideWaves = null,
-      Mana mana = null)
+      Mana mana = null,
+      IAudioService audio = null)
     {
       _credits = credits;
       _difficulty = difficulty;
       _mana = mana;
+      _audio = audio;
       if (overrideWaves != null) waveGroups = overrideWaves;
       StartSpawning();
     }
@@ -168,7 +172,7 @@ namespace EnemySystem
       EnemyRuntime enemyRuntime = enemyObj.GetComponent<EnemyRuntime>();
       if (enemyRuntime == null) return;
 
-      enemyRuntime.Initialize(enemyConfig, path, _credits, baseRef, _difficulty, _mana);
+      enemyRuntime.Initialize(enemyConfig, path, _credits, baseRef, _difficulty, _mana, _audio);
       enemyRuntime.OnEnemyDied        += HandleEnemyDied;
       enemyRuntime.OnEnemyReachedBase += HandleEnemyReachedBase;
 

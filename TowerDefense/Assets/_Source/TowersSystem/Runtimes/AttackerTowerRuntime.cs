@@ -92,7 +92,7 @@ namespace TowersSystem.Runtimes
             var go = Instantiate(Config.ProjectilePrefab, transform.position, Quaternion.identity);
             var proj = go.GetComponent<Projectile>();
             if (proj != null)
-                proj.Initialize(_currentTarget, Damage, Config.ProjectileSpeed, this, StunOnHit);
+                proj.Initialize(_currentTarget, Damage, Config.ProjectileSpeed, this, StunOnHit, Audio);
 
             _currentCooldown = Config.Cooldown;
         }

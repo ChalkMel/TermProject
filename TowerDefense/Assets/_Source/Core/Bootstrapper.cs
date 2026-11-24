@@ -6,6 +6,7 @@ using HeatSystem;
 using LevelSystem;
 using Resources;
 using ResourceSystem;
+using SoundSystem;
 using TowersSystem;
 using TowersSystem.BuildSystem;
 using UnityEngine;
@@ -22,6 +23,7 @@ namespace Core
     [SerializeField] private EnemySpawner enemySpawner;
     [SerializeField] private TimeManager timeManager;
     [SerializeField] private AcornSpawner acornSpawner;
+    [SerializeField] private AudioService audioService;
 
     [Header("Level / Difficulty")]
     [SerializeField] private Base baseRef;
@@ -56,10 +58,18 @@ namespace Core
       SetupBase(level, difficulty);
       SetupHeat(difficulty);
       SetupAbilities(level);
+      SetupMusic(level);
       timeManager.Init(_credits, _mana);
-      acornSpawner.Init(_credits, difficulty);
+      acornSpawner.Init(_credits, audioService, difficulty: difficulty);
     }
 
+    private void SetupMusic(LevelConfig level)
+    {
+      if (audioService == null) return;
+      var track = level != null ? level.BackgroundMusic : SoundType.MusicDay;
+      audioService.PlayMusic(track);
+    }
+    
     private void SetupCredits(LevelConfig level, DifficultyConfig difficulty)
     {
       int starting = level != null ? level.StartingCredits : 120;
@@ -77,7 +87,7 @@ namespace Core
     
     private void SetupEnemySystem(DifficultyConfig difficulty, LevelConfig level)
     {
-      enemySpawner.Init(_credits, difficulty, level?.WaveGroups, _mana);
+      enemySpawner.Init(_credits, difficulty, level?.WaveGroups, _mana, audioService);
     }
 
     private void SetupBase(LevelConfig level, DifficultyConfig difficulty)
@@ -111,11 +121,11 @@ namespace Core
       _placementRange.SetColor(new Color(1f, 1f, 0f, 0.6f));
 
       _registry = new PlacedTowerRegistry();
-      _factory  = new TowerFactory(towerTilemap);
+      _factory  = new TowerFactory(towerTilemap, audioService);
       _preview  = placementController.gameObject.AddComponent<PlacementPreview>();
-      _interaction = new TowerInteractionController(_credits, tooltip, _placementRange);
+      _interaction = new TowerInteractionController(_credits, tooltip, _placementRange, audioService);
 
-      placementController.Initialize(_registry, _factory, _preview, _interaction, _credits);
+      placementController.Initialize(_registry, _factory, _preview, _interaction, _credits, audioService);
     }
 
     private void OnDestroy() => _interaction?.Dispose();

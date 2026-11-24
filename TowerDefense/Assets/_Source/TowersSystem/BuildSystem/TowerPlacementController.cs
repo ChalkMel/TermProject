@@ -1,4 +1,5 @@
 using Resources;
+using SoundSystem;
 using TowersSystem.Config;
 using TowersSystem.Menu;
 using TowersSystem.Runtimes;
@@ -24,7 +25,8 @@ namespace TowersSystem.BuildSystem
         private TowerFactory _factory;
         private PlacementPreview _preview;
         private TowerInteractionController _interaction;
-
+        private IAudioService _audio;
+        
         private TowerConfig _selectedConfig;
 
         public void Initialize(
@@ -32,13 +34,15 @@ namespace TowersSystem.BuildSystem
             TowerFactory factory,
             PlacementPreview preview,
             TowerInteractionController interaction,
-            Credits credits)
+            Credits credits,
+            IAudioService audio)
         {
             _registry = registry;
             _factory = factory;
             _preview = preview;
             _interaction = interaction;
             _credits = credits;
+            _audio = audio;
         }
 
         private void Awake()
@@ -114,11 +118,13 @@ namespace TowersSystem.BuildSystem
 
         private void PlaceTower(TowerConfig config, Vector3Int cell)
         {
-            if (!_credits.TrySpendMoney(config.Cost)) return;
             if (_registry.Contains(cell)) return;
+            if (!_credits.TrySpendMoney(config.Cost)) return;
 
             TowerRuntimeBase tower = _factory.Create(config, cell);
+            if (tower == null) return;
             _registry.TryAdd(cell, tower);
+            _audio?.Play(config.PlaceSound);
         }
 
         private void OnTowerChosen(TowerConfig config)
@@ -152,6 +158,7 @@ namespace TowersSystem.BuildSystem
             if (tower == null) return;
 
             _interaction.Sell(tower);
+            _audio?.Play(tower.Config.SellSound);
             _registry.Remove(tower.CellPosition);
             _factory.Remove(tower);
         }

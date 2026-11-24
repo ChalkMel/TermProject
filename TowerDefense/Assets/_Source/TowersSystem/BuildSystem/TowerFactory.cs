@@ -1,3 +1,4 @@
+using SoundSystem;
 using TowersSystem.Config;
 using TowersSystem.Runtimes;
 using UnityEngine;
@@ -8,8 +9,13 @@ namespace TowersSystem.BuildSystem
   public class TowerFactory
   {
     private readonly Tilemap _tilemap;
+    private readonly IAudioService _audio;
 
-    public TowerFactory(Tilemap tilemap) => _tilemap = tilemap;
+    public TowerFactory(Tilemap tilemap, IAudioService audio)
+    {
+      _tilemap = tilemap;
+      _audio   = audio;
+    }
 
     public TowerRuntimeBase Create(TowerConfig config, Vector3Int cell)
     {
@@ -22,7 +28,7 @@ namespace TowersSystem.BuildSystem
       rb.bodyType = RigidbodyType2D.Kinematic;
 
       var runtime = AddTowerComponent(go, config.Type);
-      runtime.Initialize(config, cell);
+      runtime.Initialize(config, cell, _audio);
       
       SetupRangeDetection(runtime);
       
